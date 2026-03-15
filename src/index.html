@@ -443,15 +443,15 @@
           <div class="die-row__label">Across</div>
           <div class="input-group">
             <label for="acrossCount">Count</label>
-            <input type="number" id="acrossCount" value="6" min="1" step="1">
+            <input type="number" id="acrossCount" placeholder="e.g. 6" min="1" step="1">
           </div>
           <div class="input-group">
             <label for="acrossSize">Size (mm)</label>
-            <input type="number" id="acrossSize" value="53" min="0" step="0.001">
+            <input type="number" id="acrossSize" placeholder="e.g. 53" min="0" step="0.001">
           </div>
           <div class="input-group">
             <label for="acrossSpace">Space (mm)</label>
-            <input type="number" id="acrossSpace" value="3" min="0" step="0.001">
+            <input type="number" id="acrossSpace" placeholder="e.g. 3" min="0" step="0.001">
           </div>
         </div>
         <!-- Across C/C -->
@@ -473,15 +473,15 @@
           <div class="die-row__label">Around</div>
           <div class="input-group">
             <label for="aroundCount">Count</label>
-            <input type="number" id="aroundCount" value="5" min="1" step="1">
+            <input type="number" id="aroundCount" placeholder="e.g. 5" min="1" step="1">
           </div>
           <div class="input-group">
             <label for="aroundSize">Size (mm)</label>
-            <input type="number" id="aroundSize" value="30" min="0" step="0.001">
+            <input type="number" id="aroundSize" placeholder="e.g. 30" min="0" step="0.001">
           </div>
           <div class="input-group">
             <label for="aroundSpace">Space (mm)</label>
-            <input type="number" id="aroundSpace" value="3" min="0" step="0.001">
+            <input type="number" id="aroundSpace" placeholder="e.g. 3" min="0" step="0.001">
           </div>
         </div>
         <!-- Around C/C -->
@@ -513,11 +513,11 @@
       <div class="calc-inputs" id="inputs-amount">
         <div class="input-group">
           <label for="totalLabels">Total Labels</label>
-          <input type="number" id="totalLabels" value="10000" min="1">
+          <input type="number" id="totalLabels" placeholder="e.g. 10000" min="1">
         </div>
         <div class="input-group">
           <label for="perRoll">Labels per Roll</label>
-          <input type="number" id="perRoll" value="500" min="1">
+          <input type="number" id="perRoll" placeholder="e.g. 500" min="1">
         </div>
       </div>
 
@@ -525,7 +525,7 @@
       <div class="calc-inputs" id="inputs-split" style="display:none;">
         <div class="input-group">
           <label for="totalLabelsSplit">Total Labels</label>
-          <input type="number" id="totalLabelsSplit" value="10000" min="1">
+          <input type="number" id="totalLabelsSplit" placeholder="e.g. 10000" min="1">
         </div>
         <div class="input-group">
           <label for="splitDivider">Divider (optional)</label>
@@ -618,7 +618,9 @@
       </div>
     </section>
 
-    <footer class="footer">Label Run Calculator &middot; Die-based production planning</footer>
+    <footer class="footer">Label Run Calculator &middot; Die-based production planning<br>By Roger Jemterud &middot; <a
+        href="https://github.com/RzrZrx/LabelCalculate" target="_blank" rel="noopener"
+        style="color:var(--accent);text-decoration:none;">github.com/RzrZrx/LabelCalculate</a></footer>
   </div>
 
   <script>
