@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Label Run Calculator</title>
+  <meta name="description"
+    content="Calculate label printing runs from die configuration. Supports roll-by-amount and split-roll modes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ─── Reset & Variables ─────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --bg-card-hover: rgba(255, 255, 255, 0.07);
+      --bg-input: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.6);
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #818cf8;
+      --accent-glow: rgba(129, 140, 248, 0.25);
+      --success: #34d399;
+      --success-glow: rgba(52, 211, 153, 0.15);
+      --warning: #fbbf24;
+      --warning-glow: rgba(251, 191, 36, 0.15);
+      --danger: #f87171;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --transition: 0.25s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99, 102, 241, 0.12), transparent),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(52, 211, 153, 0.08), transparent),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(251, 191, 36, 0.04), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────── */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      box-shadow: 0 0 32px var(--accent-glow);
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 24px var(--accent-glow);
+      }
+
+      50% {
+        box-shadow: 0 0 48px var(--accent-glow);
+      }
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+
+    /* ─── Cards ───────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card__title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card__title span {
+      font-size: 1rem;
+    }
+
+    /* ─── Die Grid ────────────────────────────────────────────── */
+    .die-section {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .die-row {
+      display: grid;
+      grid-template-columns: auto 1fr 1fr 1fr;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .die-row__label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      padding-bottom: 0.6rem;
+      min-width: 70px;
+    }
+
+    /* ─── Input Groups ────────────────────────────────────────── */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .input-group label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .input-group input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      width: 100%;
+    }
+
+    .input-group input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .input-group input[readonly] {
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.06);
+      border-color: rgba(99, 102, 241, 0.15);
+      cursor: default;
+    }
+
+    /* ─── Mode Tabs ──────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+
+    .tab:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(99, 102, 241, 0.08));
+      border-color: rgba(99, 102, 241, 0.4);
+      color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    /* ─── Calc Inputs ────────────────────────────────────────── */
+    .calc-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .calc-inputs .input-group.full {
+      grid-column: 1 / -1;
+    }
+
+    /* ─── Results ─────────────────────────────────────────────── */
+    .results {
+      display: none;
+    }
+
+    .results.visible {
+      display: block;
+      animation: fadeSlide 0.35s ease-out;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .result-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      text-align: center;
+      transition: all var(--transition);
+    }
+
+    .result-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-item__value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-item__label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .result-item.highlight {
+      border-color: rgba(52, 211, 153, 0.3);
+      background: var(--success-glow);
+    }
+
+    .result-item.highlight .result-item__value {
+      color: var(--success);
+    }
+
+    .result-item.warn {
+      border-color: rgba(251, 191, 36, 0.3);
+      background: var(--warning-glow);
+    }
+
+    .result-item.warn .result-item__value {
+      color: var(--warning);
+    }
+
+    .result-item.accent-item .result-item__value {
+      color: var(--accent);
+    }
+
+    /* ─── Calculate Button ───────────────────────────────────── */
+    .btn-calculate {
+      display: block;
+      width: 100%;
+      padding: 0.85rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #6366f1, #818cf8);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-calculate:hover {
+      box-shadow: 0 0 32px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-calculate:active {
+      transform: translateY(0);
+    }
+
+    /* ─── Summary Box ────────────────────────────────────────── */
+    .summary-box {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      background: rgba(99, 102, 241, 0.06);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    .summary-box strong {
+      color: var(--text-primary);
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .app {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .die-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .die-row__label {
+        grid-column: 1 / -1;
+      }
+
+      .calc-inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__icon">🏷️</div>
+      <h1>Label Run Calculator</h1>
+      <p>Calculate label production runs from die configuration</p>
+    </header>
+
+    <!-- Die Configuration -->
+    <section class="card" id="die-card">
+      <div class="card__title"><span>⚙️</span> Die Configuration</div>
+      <div class="die-section">
+        <!-- Across -->
+        <div class="die-row">
+          <div class="die-row__label">Across</div>
+          <div class="input-group">
+            <label for="acrossCount">Count</label>
+            <input type="number" id="acrossCount" value="6" min="1" step="1">
+          </div>
+          <div class="input-group">
+            <label for="acrossSize">Size (mm)</label>
+            <input type="number" id="acrossSize" value="53" min="0" step="0.001">
+          </div>
+          <div class="input-group">
+            <label for="acrossSpace">Space (mm)</label>
+            <input type="number" id="acrossSpace" value="3" min="0" step="0.001">
+          </div>
+        </div>
+        <!-- Across C/C -->
+        <div class="die-row">
+          <div class="die-row__label"></div>
+          <div class="input-group">
+            <label for="acrossCC">C/C (mm)</label>
+            <input type="number" id="acrossCC" readonly>
+          </div>
+          <div class="input-group">
+            <label for="acrossTotal">Total Width (mm)</label>
+            <input type="number" id="acrossTotal" readonly>
+          </div>
+          <div class="input-group"></div>
+        </div>
+
+        <!-- Around -->
+        <div class="die-row">
+          <div class="die-row__label">Around</div>
+          <div class="input-group">
+            <label for="aroundCount">Count</label>
+            <input type="number" id="aroundCount" value="5" min="1" step="1">
+          </div>
+          <div class="input-group">
+            <label for="aroundSize">Size (mm)</label>
+            <input type="number" id="aroundSize" value="30" min="0" step="0.001">
+          </div>
+          <div class="input-group">
+            <label for="aroundSpace">Space (mm)</label>
+            <input type="number" id="aroundSpace" value="3" min="0" step="0.001">
+          </div>
+        </div>
+        <!-- Around C/C -->
+        <div class="die-row">
+          <div class="die-row__label"></div>
+          <div class="input-group">
+            <label for="aroundCC">C/C (mm)</label>
+            <input type="number" id="aroundCC" readonly>
+          </div>
+          <div class="input-group">
+            <label for="aroundRepeat">Repeat Length (mm)</label>
+            <input type="number" id="aroundRepeat" readonly>
+          </div>
+          <div class="input-group"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Calculation Mode -->
+    <section class="card" id="calc-card">
+      <div class="card__title"><span>📐</span> Calculation</div>
+
+      <div class="tabs">
+        <button class="tab active" id="tab-amount" data-mode="amount">Roll by Amount</button>
+        <button class="tab" id="tab-split" data-mode="split">Split Roll</button>
+      </div>
+
+      <!-- Roll by Amount Inputs -->
+      <div class="calc-inputs" id="inputs-amount">
+        <div class="input-group">
+          <label for="totalLabels">Total Labels</label>
+          <input type="number" id="totalLabels" value="10000" min="1">
+        </div>
+        <div class="input-group">
+          <label for="perRoll">Labels per Roll</label>
+          <input type="number" id="perRoll" value="500" min="1">
+        </div>
+      </div>
+
+      <!-- Split Roll Inputs -->
+      <div class="calc-inputs" id="inputs-split" style="display:none;">
+        <div class="input-group">
+          <label for="totalLabelsSplit">Total Labels</label>
+          <input type="number" id="totalLabelsSplit" value="10000" min="1">
+        </div>
+        <div class="input-group">
+          <label for="splitDivider">Divider (optional)</label>
+          <input type="number" id="splitDivider" placeholder="e.g. 4" min="1" step="1">
+        </div>
+        <div class="input-group full">
+          <label for="splitMaxPerRoll">Max Labels per Roll (optional)</label>
+          <input type="number" id="splitMaxPerRoll" placeholder="e.g. 200" min="1" step="1">
+        </div>
+      </div>
+
+      <button class="btn-calculate" id="btnCalc">Calculate</button>
+
+      <!-- Roll by Amount Results -->
+      <div class="results" id="results-amount">
+        <div class="result-grid">
+          <div class="result-item accent-item">
+            <div class="result-item__value" id="res-rollsNeeded">—</div>
+            <div class="result-item__label">Rolls Needed</div>
+          </div>
+          <div class="result-item highlight">
+            <div class="result-item__value" id="res-actualRolls">—</div>
+            <div class="result-item__label">Actual Rolls</div>
+          </div>
+          <div class="result-item warn">
+            <div class="result-item__value" id="res-extraRolls">—</div>
+            <div class="result-item__label">Extra Rolls</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item__value" id="res-copiesAcross">—</div>
+            <div class="result-item__label">Copies Across</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item__value" id="res-revolutions">—</div>
+            <div class="result-item__label">Revolutions / Roll</div>
+          </div>
+          <div class="result-item highlight">
+            <div class="result-item__value" id="res-totalCopies">—</div>
+            <div class="result-item__label">Total Die Copies</div>
+          </div>
+          <div class="result-item accent-item">
+            <div class="result-item__value" id="res-totalLabels">—</div>
+            <div class="result-item__label">Total Labels Printed</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item__value" id="res-runPerRoll">—</div>
+            <div class="result-item__label">Run / Roll (m)</div>
+          </div>
+          <div class="result-item highlight">
+            <div class="result-item__value" id="res-totalRun">—</div>
+            <div class="result-item__label">Total Run (m)</div>
+          </div>
+        </div>
+        <div class="summary-box" id="summary-amount"></div>
+      </div>
+
+      <!-- Split Roll Results -->
+      <div class="results" id="results-split">
+        <div class="result-grid">
+          <div class="result-item accent-item">
+            <div class="result-item__value" id="res-labelsPerRev">—</div>
+            <div class="result-item__label">Labels / Revolution</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item__value" id="res-dieCopies">—</div>
+            <div class="result-item__label">Copies of Die</div>
+          </div>
+          <div class="result-item">
+            <div class="result-item__value" id="res-totalLabelsSplit">—</div>
+            <div class="result-item__label">Total Labels</div>
+          </div>
+          <div class="result-item highlight">
+            <div class="result-item__value" id="res-splitTotalRolls">—</div>
+            <div class="result-item__label">Total Rolls</div>
+          </div>
+          <div class="result-item accent-item">
+            <div class="result-item__value" id="res-splitFullRollLabels">—</div>
+            <div class="result-item__label">Labels / Full Roll</div>
+          </div>
+          <div class="result-item warn">
+            <div class="result-item__value" id="res-splitLastRoll">—</div>
+            <div class="result-item__label">Labels / Last Roll</div>
+          </div>
+          <div class="result-item highlight">
+            <div class="result-item__value" id="res-splitRun">—</div>
+            <div class="result-item__label">Total Run (m)</div>
+          </div>
+        </div>
+        <div class="summary-box" id="summary-split"></div>
+      </div>
+    </section>
+
+    <footer class="footer">Label Run Calculator &middot; Die-based production planning</footer>
+  </div>
+
+  <script>
+    // ─── DOM Refs ────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    const acrossCount = $('acrossCount');
+    const acrossSize = $('acrossSize');
+    const acrossSpace = $('acrossSpace');
+    const acrossCC = $('acrossCC');
+    const acrossTotal = $('acrossTotal');
+
+    const aroundCount = $('aroundCount');
+    const aroundSize = $('aroundSize');
+    const aroundSpace = $('aroundSpace');
+    const aroundCC = $('aroundCC');
+    const aroundRepeat = $('aroundRepeat');
+
+    let currentMode = 'amount';
+
+    // ─── Die Auto-Calc ──────────────────────────────────────
+    function updateDie() {
+      const ac = parseFloat(acrossSize.value) || 0;
+      const as = parseFloat(acrossSpace.value) || 0;
+      const cc1 = ac + as;
+      acrossCC.value = cc1.toFixed(3);
+      acrossTotal.value = (cc1 * (parseInt(acrossCount.value) || 0)).toFixed(3);
+
+      const rc = parseFloat(aroundSize.value) || 0;
+      const rs = parseFloat(aroundSpace.value) || 0;
+      const cc2 = rc + rs;
+      aroundCC.value = cc2.toFixed(3);
+      aroundRepeat.value = (cc2 * (parseInt(aroundCount.value) || 0)).toFixed(3);
+    }
+
+    [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace]
+      .forEach(el => el.addEventListener('input', updateDie));
+    updateDie();
+
+    // ─── Tabs ───────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentMode = tab.dataset.mode;
+
+        $('inputs-amount').style.display = currentMode === 'amount' ? '' : 'none';
+        $('inputs-split').style.display = currentMode === 'split' ? '' : 'none';
+        $('results-amount').classList.remove('visible');
+        $('results-split').classList.remove('visible');
+      });
+    });
+
+    // ─── Formatting ─────────────────────────────────────────
+    function fmt(n) {
+      return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    }
+
+    // ─── Calculate ──────────────────────────────────────────
+    $('btnCalc').addEventListener('click', () => {
+      const across = parseInt(acrossCount.value) || 1;
+      const around = parseInt(aroundCount.value) || 1;
+
+      if (currentMode === 'amount') {
+        calcByAmount(across, around);
+      } else {
+        calcSplitRoll(across, around);
+      }
+    });
+
+    function calcByAmount(across, around) {
+      const total = parseInt($('totalLabels').value) || 0;
+      const perRoll = parseInt($('perRoll').value) || 1;
+
+      const rollsNeeded = total / perRoll;
+      const copiesAcross = Math.ceil(rollsNeeded / across);
+      const actualRolls = copiesAcross * across;
+      const extraRolls = actualRolls - Math.ceil(rollsNeeded);
+      const revolutions = perRoll / around;
+      const totalCopies = revolutions * copiesAcross;
+      const totalPrinted = actualRolls * perRoll;
+
+      const repeatLen = parseFloat(aroundRepeat.value) || 0;
+      const runPerRollM = (revolutions * repeatLen) / 1000;
+      const totalRunM = runPerRollM * copiesAcross;
+
+      $('res-rollsNeeded').textContent = fmt(rollsNeeded);
+      $('res-actualRolls').textContent = fmt(actualRolls);
+      $('res-extraRolls').textContent = fmt(extraRolls);
+      $('res-copiesAcross').textContent = fmt(copiesAcross);
+      $('res-revolutions').textContent = fmt(revolutions);
+      $('res-totalCopies').textContent = fmt(totalCopies);
+      $('res-totalLabels').textContent = fmt(totalPrinted);
+      $('res-runPerRoll').textContent = fmt(parseFloat(runPerRollM.toFixed(2)));
+      $('res-totalRun').textContent = fmt(parseFloat(totalRunM.toFixed(2)));
+
+      $('summary-amount').innerHTML =
+        `Die: <strong>${across} across × ${around} around</strong><br>` +
+        `${fmt(total)} labels ÷ ${fmt(perRoll)}/roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
+        `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
+        (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
+        `${fmt(revolutions)} revolutions × ${fmt(copiesAcross)} copies = <strong>${fmt(totalCopies)} total die copies</strong><br>` +
+        `Total labels printed: <strong>${fmt(totalPrinted)}</strong><br>` +
+        `Run per roll: <strong>${fmt(parseFloat(runPerRollM.toFixed(2)))} m</strong> — Total run: <strong>${fmt(parseFloat(totalRunM.toFixed(2)))} m</strong>`;
+
+      $('results-amount').classList.add('visible');
+      $('results-split').classList.remove('visible');
+    }
+
+    function calcSplitRoll(across, around) {
+      const total = parseInt($('totalLabelsSplit').value) || 0;
+      const divider = parseInt($('splitDivider').value) || 0;
+      const maxPerRoll = parseInt($('splitMaxPerRoll').value) || 0;
+      const labelsPerRev = across * around;
+      const dieCopies = total / labelsPerRev;
+      const fullRevs = Math.ceil(dieCopies);
+      const rounded = fullRevs * labelsPerRev;
+      const labelsPerLane = fullRevs * around; // labels on each across lane
+
+      const repeatLen = parseFloat(aroundRepeat.value) || 0;
+      const splitRunM = (fullRevs * repeatLen) / 1000;
+
+      // Determine roll breakdown per lane
+      let rollsPerLane, fullRollLabels, lastRollLabels, totalRolls;
+
+      if (maxPerRoll > 0) {
+        // Max per roll mode: split at revolution boundaries
+        const revsPerFullRoll = Math.floor(maxPerRoll / around);
+        const labelsInFullRoll = revsPerFullRoll * around;
+        if (labelsInFullRoll <= 0) {
+          // Max is less than one revolution — each revolution becomes a roll
+          rollsPerLane = fullRevs;
+          fullRollLabels = around;
+          lastRollLabels = around;
+        } else {
+          rollsPerLane = Math.ceil(labelsPerLane / labelsInFullRoll);
+          const remainder = labelsPerLane - (rollsPerLane - 1) * labelsInFullRoll;
+          fullRollLabels = labelsInFullRoll;
+          lastRollLabels = remainder > 0 ? remainder : labelsInFullRoll;
+        }
+      } else if (divider > 1) {
+        // Divider mode: split each lane into equal parts at revolution boundaries
+        const revsPerSubRoll = Math.ceil(fullRevs / divider);
+        rollsPerLane = divider;
+        fullRollLabels = revsPerSubRoll * around;
+        const lastRevs = fullRevs - revsPerSubRoll * (divider - 1);
+        lastRollLabels = lastRevs * around;
+      } else {
+        // No split — one roll per lane
+        rollsPerLane = 1;
+        fullRollLabels = labelsPerLane;
+        lastRollLabels = labelsPerLane;
+      }
+
+      totalRolls = rollsPerLane * across;
+      const allSame = (fullRollLabels === lastRollLabels);
+
+      // Populate result tiles
+      $('res-labelsPerRev').textContent = fmt(labelsPerRev);
+      $('res-dieCopies').textContent = fmt(parseFloat(dieCopies.toFixed(4)));
+      $('res-totalLabelsSplit').textContent = fmt(rounded);
+      $('res-splitTotalRolls').textContent = fmt(totalRolls);
+      $('res-splitFullRollLabels').textContent = fmt(fullRollLabels);
+      $('res-splitLastRoll').textContent = allSame ? '—' : fmt(lastRollLabels);
+      $('res-splitRun').textContent = fmt(parseFloat(splitRunM.toFixed(2)));
+
+      // Build summary
+      let summary =
+        `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
+        `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopies.toFixed(4)))} copies</strong> of the die<br>` +
+        `Rounded up: <strong>${fmt(rounded)} total labels</strong> (${fullRevs} full revolutions)<br>`;
+
+      if (rollsPerLane > 1) {
+        const fullCount = allSame ? rollsPerLane : (rollsPerLane - 1);
+        summary += `Each lane (${across} lanes): <strong>${fullCount} roll${fullCount > 1 ? 's' : ''} × ${fmt(fullRollLabels)} labels</strong>`;
+        if (!allSame) {
+          summary += ` + <strong>1 roll × ${fmt(lastRollLabels)} labels</strong>`;
+        }
+        summary += `<br>Total: <strong>${fmt(totalRolls)} rolls</strong><br>`;
+      } else {
+        summary += `Split into <strong>${across} rolls</strong> × <strong>${fmt(fullRollLabels)} labels each</strong><br>`;
+      }
+
+      summary += `Total run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
+
+      $('summary-split').innerHTML = summary;
+
+      $('results-split').classList.add('visible');
+      $('results-amount').classList.remove('visible');
+    }
+
+    // Auto-calculate on Enter key
+    document.querySelectorAll('#calc-card input').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') $('btnCalc').click();
+      });
+    });
+  </script>
+
+</body>
+
+</html>
