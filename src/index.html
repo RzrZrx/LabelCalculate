@@ -671,6 +671,13 @@
         tab.classList.add('active');
         currentMode = tab.dataset.mode;
 
+        // Sync Total Labels between tabs
+        if (currentMode === 'split' && $('totalLabels').value) {
+          $('totalLabelsSplit').value = $('totalLabels').value;
+        } else if (currentMode === 'amount' && $('totalLabelsSplit').value) {
+          $('totalLabels').value = $('totalLabelsSplit').value;
+        }
+
         $('inputs-amount').style.display = currentMode === 'amount' ? '' : 'none';
         $('inputs-split').style.display = currentMode === 'split' ? '' : 'none';
         $('results-amount').classList.remove('visible');
