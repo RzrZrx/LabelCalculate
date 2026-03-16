@@ -566,6 +566,10 @@
           <input type="number" id="totalLabels" placeholder="e.g. 10000" min="1">
         </div>
         <div class="input-group">
+          <label for="totalRolls">Total Rolls</label>
+          <input type="number" id="totalRolls" placeholder="e.g. 20" min="1">
+        </div>
+        <div class="input-group full">
           <label for="perRoll">Labels per Roll</label>
           <input type="number" id="perRoll" placeholder="e.g. 500" min="1">
         </div>
@@ -586,84 +590,23 @@
           <input type="number" id="splitMaxPerRoll" placeholder="e.g. 200" min="1" step="1">
         </div>
       </div>
-
-      <button class="btn-calculate" id="btnCalc">Calculate</button>
+      <!-- Production Card -->
+      <div class="card" id="production-card" style="display:none; text-align:center; padding:1.5rem; border:2px solid var(--accent); margin-bottom:1.5rem; background:rgba(100,255,100,0.05);">
+        <div style="color:var(--accent); font-size:0.9rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">Set Label Press To</div>
+        <div id="res-productionCopies" style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
+        <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total Die Copies</div>
+        <div id="res-prodOnlyCopies" style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.25rem; font-style:italic;"></div>
+      </div>
 
       <!-- Roll by Amount Results -->
       <div class="results" id="results-amount">
-        <div class="result-grid">
-          <div class="result-item accent-item">
-            <div class="result-item__value" id="res-rollsNeeded">—</div>
-            <div class="result-item__label">Rolls Needed</div>
-          </div>
-          <div class="result-item highlight">
-            <div class="result-item__value" id="res-actualRolls">—</div>
-            <div class="result-item__label">Actual Rolls</div>
-          </div>
-          <div class="result-item warn">
-            <div class="result-item__value" id="res-extraRolls">—</div>
-            <div class="result-item__label">Extra Rolls</div>
-          </div>
-          <div class="result-item">
-            <div class="result-item__value" id="res-copiesAcross">—</div>
-            <div class="result-item__label">Copies Across</div>
-          </div>
-          <div class="result-item">
-            <div class="result-item__value" id="res-revolutions">—</div>
-            <div class="result-item__label">Revolutions per Roll</div>
-          </div>
-          <div class="result-item highlight" style="border-width:2px;">
-            <div class="result-item__value" id="res-totalCopies" style="font-size:1.8rem;">—</div>
-            <div class="result-item__label">Total Die Copies</div>
-          </div>
-          <div class="result-item accent-item">
-            <div class="result-item__value" id="res-totalLabels">—</div>
-            <div class="result-item__label">Total Labels Printed</div>
-          </div>
-          <div class="result-item">
-            <div class="result-item__value" id="res-runPerRoll">—</div>
-            <div class="result-item__label">Run per Roll (m)</div>
-          </div>
-          <div class="result-item highlight">
-            <div class="result-item__value" id="res-totalRun">—</div>
-            <div class="result-item__label">Total Run (m)</div>
-          </div>
-        </div>
+        <!-- The redundant result grid was removed; displaying only the text summary below the Production Card -->
         <div class="summary-box" id="summary-amount"></div>
       </div>
 
       <!-- Split Roll Results -->
       <div class="results" id="results-split">
-        <div class="result-grid">
-          <div class="result-item accent-item">
-            <div class="result-item__value" id="res-labelsPerRev">—</div>
-            <div class="result-item__label">Labels per Revolution</div>
-          </div>
-          <div class="result-item highlight" style="border-width:2px;">
-            <div class="result-item__value" id="res-dieCopies" style="font-size:1.8rem;">—</div>
-            <div class="result-item__label">Total Die Copies</div>
-          </div>
-          <div class="result-item">
-            <div class="result-item__value" id="res-totalLabelsSplit">—</div>
-            <div class="result-item__label">Total Labels</div>
-          </div>
-          <div class="result-item highlight">
-            <div class="result-item__value" id="res-splitTotalRolls">—</div>
-            <div class="result-item__label">Total Rolls</div>
-          </div>
-          <div class="result-item accent-item">
-            <div class="result-item__value" id="res-splitFullRollLabels">—</div>
-            <div class="result-item__label">Labels / Full Roll</div>
-          </div>
-          <div class="result-item warn">
-            <div class="result-item__value" id="res-splitLastRoll">—</div>
-            <div class="result-item__label">Labels / Last Roll</div>
-          </div>
-          <div class="result-item highlight">
-            <div class="result-item__value" id="res-splitRun">—</div>
-            <div class="result-item__label">Total Run (m)</div>
-          </div>
-        </div>
+        <!-- The redundant result grid was removed; displaying only the text summary below the Production Card -->
         <div class="summary-box" id="summary-split"></div>
       </div>
     </section>
@@ -770,7 +713,7 @@
       }
     }
 
-    function updateAll() { updateDie(); updateWaste(); }
+    function updateAll() { updateDie(); updateWaste(); calculateCurrent(); }
 
     [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace, aroundDup]
       .forEach(el => el.addEventListener('input', updateAll));
@@ -778,14 +721,46 @@
     $('wasteMeters').addEventListener('input', () => {
       lastWasteEdit = 'meters';
       updateWasteMeters();
+      calculateCurrent();
     });
     
     $('wasteLabels').addEventListener('input', () => {
       lastWasteEdit = 'labels';
       updateWasteLabels();
+      calculateCurrent();
     });
     
     updateAll();
+
+    // ─── Two-Way Total Labels / Rolls ───────────────────────
+    let lastLabelsEdit = 'labels'; // 'labels' or 'rolls'
+
+    function syncLabelsAndRolls() {
+      const labels = parseInt($('totalLabels').value);
+      const rolls = parseInt($('totalRolls').value);
+      const perRoll = parseInt($('perRoll').value);
+
+      if (!isNaN(perRoll) && perRoll > 0) {
+        if (lastLabelsEdit === 'labels' && !isNaN(labels)) {
+          $('totalRolls').value = Math.ceil(labels / perRoll);
+        } else if (lastLabelsEdit === 'rolls' && !isNaN(rolls)) {
+          $('totalLabels').value = rolls * perRoll;
+        }
+      }
+      calculateCurrent();
+    }
+
+    $('totalLabels').addEventListener('input', () => {
+      lastLabelsEdit = 'labels';
+      syncLabelsAndRolls();
+    });
+
+    $('totalRolls').addEventListener('input', () => {
+      lastLabelsEdit = 'rolls';
+      syncLabelsAndRolls();
+    });
+
+    $('perRoll').addEventListener('input', syncLabelsAndRolls);
 
     // ─── Tabs ───────────────────────────────────────────────
     document.querySelectorAll('.tab').forEach(tab => {
@@ -803,8 +778,10 @@
 
         $('inputs-amount').style.display = currentMode === 'amount' ? '' : 'none';
         $('inputs-split').style.display = currentMode === 'split' ? '' : 'none';
+        $('production-card').style.display = 'none';
         $('results-amount').classList.remove('visible');
         $('results-split').classList.remove('visible');
+        calculateCurrent();
       });
     });
 
@@ -814,21 +791,42 @@
     }
 
     // ─── Calculate ──────────────────────────────────────────
-    $('btnCalc').addEventListener('click', () => {
+    function calculateCurrent() {
       const across = parseInt(acrossCount.value) || 1;
       const dup = parseInt(aroundDup.value) || 1;
       const around = (parseInt(aroundCount.value) || 1) * dup;
+
+      // Don't calculate if basic inputs are missing
+      if (across < 1 || around < 1) return;
 
       if (currentMode === 'amount') {
         calcByAmount(across, around);
       } else {
         calcSplitRoll(across, around);
       }
-    });
+    }
+
+    ['totalLabelsSplit', 'splitDivider', 'splitMaxPerRoll']
+      .forEach(id => $(id).addEventListener('input', calculateCurrent));
 
     function calcByAmount(across, around) {
-      const total = parseInt($('totalLabels').value) || 0;
-      const perRoll = parseInt($('perRoll').value) || 1;
+      const totalRaw = parseInt($('totalLabels').value);
+      const total = (!isNaN(totalRaw) && totalRaw > 0) ? totalRaw : 0;
+      const perRollRaw = parseInt($('perRoll').value);
+      const perRoll = (!isNaN(perRollRaw) && perRollRaw > 0) ? perRollRaw : 1;
+
+      // Only clear if the total is missing. If total is there but perRoll is missing, 
+      // perRoll defaults to 1 and we can still calculate.
+      if (total === 0) {
+        // Only clearing production card and summary, detailed tiles are removed
+        $('res-productionCopies').textContent = '—';
+        $('res-prodOnlyCopies').textContent = '';
+        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
+        $('production-card').style.display = 'none';
+        $('results-amount').classList.add('visible');
+        $('results-split').classList.remove('visible');
+        return;
+      }
 
       const rollsNeeded = total / perRoll;
       const copiesAcross = Math.ceil(rollsNeeded / across);
@@ -846,18 +844,14 @@
       const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
       const totalCopies = prodCopies + wasteRevs;
 
-      $('res-rollsNeeded').textContent = fmt(rollsNeeded);
-      $('res-actualRolls').textContent = fmt(actualRolls);
-      $('res-extraRolls').textContent = fmt(extraRolls);
-      $('res-copiesAcross').textContent = fmt(copiesAcross);
-      $('res-revolutions').textContent = fmt(revolutions);
-      $('res-totalCopies').textContent = fmt(totalCopies);
-      $('res-totalLabels').textContent = fmt(totalPrinted);
-      $('res-runPerRoll').textContent = fmt(parseFloat(runPerRollM.toFixed(2)));
-      $('res-totalRun').textContent = fmt(parseFloat(grandTotalM.toFixed(2)));
+      // Detailed tiles are removed, so we skip populating them
+
+      $('res-productionCopies').textContent = fmt(totalCopies);
+      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} production + ${fmt(wasteRevs)} waste)`;
+      $('production-card').style.display = 'block';
 
       let amountSummary =
-        `Die: <strong>${across} across × ${around} around</strong><br>` +
+        `Die: <strong>${across} across × ${around} around = ${across * around} labels/revolution</strong><br>` +
         `${fmt(total)} labels ÷ ${fmt(perRoll)} per roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
         `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
         (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
@@ -877,7 +871,21 @@
     }
 
     function calcSplitRoll(across, around) {
-      const total = parseInt($('totalLabelsSplit').value) || 0;
+      const totalRaw = parseInt($('totalLabelsSplit').value);
+      const total = (!isNaN(totalRaw) && totalRaw > 0) ? totalRaw : 0;
+
+      // Make sure we have enough info to calculate runs
+      if (total === 0) {
+        // Only clearing production card and summary, detailed tiles are removed
+        $('res-productionCopies').textContent = '—';
+        $('res-prodOnlyCopies').textContent = '';
+        $('summary-split').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
+        $('production-card').style.display = 'none';
+        $('results-split').classList.add('visible');
+        $('results-amount').classList.remove('visible');
+        return;
+      }
+
       const divider = parseInt($('splitDivider').value) || 0;
       const maxPerRoll = parseInt($('splitMaxPerRoll').value) || 0;
       const labelsPerRev = across * around;
@@ -928,14 +936,11 @@
       totalRolls = rollsPerLane * across;
       const allSame = (fullRollLabels === lastRollLabels);
 
-      // Populate result tiles
-      $('res-labelsPerRev').textContent = fmt(labelsPerRev);
-      $('res-dieCopies').textContent = fmt(totalDieCopies);
-      $('res-totalLabelsSplit').textContent = fmt(rounded);
-      $('res-splitTotalRolls').textContent = fmt(totalRolls);
-      $('res-splitFullRollLabels').textContent = fmt(fullRollLabels);
-      $('res-splitLastRoll').textContent = allSame ? '—' : fmt(lastRollLabels);
-      $('res-splitRun').textContent = fmt(parseFloat(grandTotalM.toFixed(2)));
+      // Detailed tiles are removed, so we skip populating them
+
+      $('res-productionCopies').textContent = fmt(totalDieCopies);
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} production + ${fmt(wasteRevs)} waste)`;
+      $('production-card').style.display = 'block';
 
       // Build summary
       let summary =
@@ -945,14 +950,14 @@
         (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') + `<br>`;
 
       if (rollsPerLane > 1) {
-        const fullCount = allSame ? rollsPerLane : (rollsPerLane - 1);
-        summary += `Each lane (${across} lanes): <strong>${fullCount} roll${fullCount > 1 ? 's' : ''} × ${fmt(fullRollLabels)} labels</strong>`;
+        const fullCount = (allSame ? rollsPerLane : (rollsPerLane - 1)) * across;
+        summary += `Split into: <strong>${fullCount} rolls × ${fmt(fullRollLabels)} labels</strong>`;
         if (!allSame) {
-          summary += ` + <strong>1 roll × ${fmt(lastRollLabels)} labels</strong>`;
+          summary += ` + <strong>${across} rolls × ${fmt(lastRollLabels)} labels</strong>`;
         }
-        summary += `<br>Total: <strong>${fmt(totalRolls)} rolls</strong><br>`;
+        summary += `<br>Total rolls: <strong>${fmt(totalRolls)}</strong><br>`;
       } else {
-        summary += `Split into <strong>${across} rolls</strong> × <strong>${fmt(fullRollLabels)} labels each</strong><br>`;
+        summary += `Split into: <strong>${across} rolls × ${fmt(fullRollLabels)} labels each</strong><br>`;
       }
 
       summary += `Production run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
