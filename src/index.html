@@ -450,8 +450,10 @@
       }
     }
 
-    /* ─── Printable Job Ticket ───────────────────────────────── */
     @media print {
+      @page {
+        margin: 1cm;
+      }
       body, .app {
         background: white !important;
         color: black !important;
@@ -460,8 +462,8 @@
         min-height: auto !important;
       }
       
-      /* Hide top header, tabs, inputs we don't need on paper, buttons, footer */
-      .header, .tabs, .calc-inputs, .btn-calculate, .footer {
+      /* Hide top header, tabs, buttons, footer */
+      .header, .tabs, .btn-calculate, .footer {
         display: none !important;
       }
       
@@ -469,13 +471,19 @@
       .die-section > .input-group.full {
         display: none !important;
       }
+
+      /* Force the die configuration grid to be visible on paper, even if collapsed in UI */
+      #manualDieConfig {
+        display: block !important;
+      }
       
       .card {
         background: none !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
-        margin-bottom: 2rem !important;
+        margin-bottom: 1rem !important;
+        page-break-inside: avoid;
       }
       
       .card__title {
@@ -494,6 +502,10 @@
         padding: 0.1rem 0 !important;
       }
       
+      .input-group input::placeholder {
+        color: transparent !important;
+      }
+      
       .input-group label {
         color: #444 !important;
         font-size: 0.8rem !important;
@@ -504,30 +516,51 @@
         font-size: 0.9rem !important;
       }
       
-      .production-card {
+      #production-card {
+        display: block !important;
         border: 3px solid black !important;
         background: none !important;
         box-shadow: none !important;
-        margin: 3rem 0 !important;
-        padding: 3rem 1rem !important;
+        margin: 1.5rem 0 !important;
+        padding: 1.5rem 1rem !important;
+        page-break-inside: avoid;
+      }
+
+      #production-card *, .summary-box * {
+        color: black !important;
+      }
+      
+      .results.visible {
+        display: block !important;
+      }
+      
+      .results.visible .summary-box {
+        display: block !important;
+      }
+      
+      /* Ensure the active calculation inputs show up on paper */
+      #inputs-amount, #inputs-split {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
       }
       
       .production-value {
         color: black !important;
-        font-size: 4.5rem !important;
+        font-size: 3.5rem !important;
       }
       
       .production-label {
         color: black !important;
-        font-size: 1.25rem !important;
+        font-size: 1.1rem !important;
       }
       
       .summary-box {
         background: none !important;
         border: none !important;
         color: black !important;
-        font-size: 1.5rem !important;
-        line-height: 1.7 !important;
+        font-size: 1.25rem !important;
+        line-height: 1.5 !important;
         padding: 0 !important;
       }
       
@@ -559,7 +592,7 @@
             <input type="file" id="dieFile" accept=".xlsx, .xls" style="padding: 0.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.05); margin-bottom: 1rem; border: none; cursor: pointer;">
           </div>
           
-          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span>Load Die <span class="unit">(Enter Die Number)</span></label>
+          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span>Enter Die Number</label>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <input type="text" id="searchDie" placeholder="e.g. 0001" autocomplete="off" disabled style="flex: 1;">
           </div>
