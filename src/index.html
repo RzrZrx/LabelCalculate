@@ -38,6 +38,7 @@
       --warning: #fbbf24;
       --warning-glow: rgba(251, 191, 36, 0.15);
       --danger: #f87171;
+      --danger-glow: rgba(248, 113, 113, 0.15);
       --radius: 12px;
       --radius-sm: 8px;
       --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
@@ -166,6 +167,28 @@
       grid-template-columns: auto 1fr 1fr 1fr;
       gap: 0.75rem;
       align-items: end;
+    }
+
+    .die-row.four-col {
+      grid-template-columns: auto 1fr 1fr 1fr 1fr;
+    }
+
+    .repeat-warning {
+      font-size: 0.7rem;
+      color: var(--danger);
+      margin-top: 0.5rem;
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .repeat-warning.visible {
+      display: flex;
+    }
+
+    .input-group input.input-warn {
+      border-color: rgba(248, 113, 113, 0.5);
+      box-shadow: 0 0 0 2px var(--danger-glow);
     }
 
     .die-row__label {
@@ -496,7 +519,7 @@
             <input type="number" id="aroundCC" readonly>
           </div>
           <div class="input-group">
-            <label for="aroundRepeat">Repeat Length (<span class="unit">mm</span>)</label>
+            <label for="aroundRepeat">Repeat (<span class="unit">mm</span>)</label>
             <input type="number" id="aroundRepeat" readonly>
           </div>
           <div class="input-group"></div>
@@ -507,6 +530,28 @@
     <!-- Calculation Mode -->
     <section class="card" id="calc-card">
       <div class="card__title"><span>📐</span> Calculation</div>
+
+      <div class="calc-inputs">
+        <div class="input-group">
+          <label for="aroundDup">Around Duplication</label>
+          <input type="number" id="aroundDup" placeholder="1" min="1" step="1" value="1">
+        </div>
+        <div class="input-group">
+          <label for="aroundRepeatDup">Repeat × Dup (<span class="unit">mm</span>)</label>
+          <input type="number" id="aroundRepeatDup" readonly>
+        </div>
+      </div>
+      <div class="calc-inputs">
+        <div class="input-group">
+          <label for="dieRegistration">Die Registration (<span class="unit">m</span>)</label>
+          <input type="number" id="dieRegistration" placeholder="e.g. 15" min="0" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="wasteLabels">Setup Waste (labels/lane)</label>
+          <input type="number" id="wasteLabels" readonly>
+        </div>
+      </div>
+      <div class="repeat-warning" id="repeatWarning">⚠️ Effective repeat is below 148 mm converter minimum</div>
 
       <div class="tabs">
         <button class="tab active" id="tab-amount" data-mode="amount">Roll by Amount</button>
@@ -566,8 +611,8 @@
             <div class="result-item__value" id="res-revolutions">—</div>
             <div class="result-item__label">Revolutions / Roll</div>
           </div>
-          <div class="result-item highlight">
-            <div class="result-item__value" id="res-totalCopies">—</div>
+          <div class="result-item highlight" style="border-width:2px;">
+            <div class="result-item__value" id="res-totalCopies" style="font-size:1.8rem;">—</div>
             <div class="result-item__label">Total Die Copies</div>
           </div>
           <div class="result-item accent-item">
@@ -593,9 +638,9 @@
             <div class="result-item__value" id="res-labelsPerRev">—</div>
             <div class="result-item__label">Labels / Revolution</div>
           </div>
-          <div class="result-item">
-            <div class="result-item__value" id="res-dieCopies">—</div>
-            <div class="result-item__label">Copies of Die</div>
+          <div class="result-item highlight" style="border-width:2px;">
+            <div class="result-item__value" id="res-dieCopies" style="font-size:1.8rem;">—</div>
+            <div class="result-item__label">Total Die Copies</div>
           </div>
           <div class="result-item">
             <div class="result-item__value" id="res-totalLabelsSplit">—</div>
@@ -640,9 +685,12 @@
     const aroundCount = $('aroundCount');
     const aroundSize = $('aroundSize');
     const aroundSpace = $('aroundSpace');
+    const aroundDup = $('aroundDup');
     const aroundCC = $('aroundCC');
     const aroundRepeat = $('aroundRepeat');
+    const aroundRepeatDup = $('aroundRepeatDup');
 
+    const MIN_REPEAT = 148;
     let currentMode = 'amount';
 
     // ─── Die Auto-Calc ──────────────────────────────────────
@@ -657,12 +705,45 @@
       const rs = parseFloat(aroundSpace.value) || 0;
       const cc2 = rc + rs;
       aroundCC.value = cc2.toFixed(3);
-      aroundRepeat.value = (cc2 * (parseInt(aroundCount.value) || 0)).toFixed(3);
+      const baseRepeat = cc2 * (parseInt(aroundCount.value) || 0);
+      aroundRepeat.value = baseRepeat.toFixed(3);
+
+      const dup = parseInt(aroundDup.value) || 1;
+      const effectiveRepeat = baseRepeat * dup;
+      aroundRepeatDup.value = effectiveRepeat.toFixed(3);
+
+      // Warning if below minimum
+      const warning = $('repeatWarning');
+      if (effectiveRepeat > 0 && effectiveRepeat < MIN_REPEAT) {
+        warning.classList.add('visible');
+        aroundRepeatDup.classList.add('input-warn');
+      } else {
+        warning.classList.remove('visible');
+        aroundRepeatDup.classList.remove('input-warn');
+      }
     }
 
-    [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace]
-      .forEach(el => el.addEventListener('input', updateDie));
-    updateDie();
+    function updateWaste() {
+      const dieReg = parseFloat($('dieRegistration').value) || 0;
+      const effectiveRepeat = parseFloat(aroundRepeatDup.value) || 0;
+      const dup = parseInt(aroundDup.value) || 1;
+      const arCount = parseInt(aroundCount.value) || 0;
+      const around = arCount * dup;
+      if (dieReg > 0 && effectiveRepeat > 0) {
+        const wasteRevs = (dieReg * 1000) / effectiveRepeat;
+        const wastePerLane = Math.ceil(wasteRevs) * around;
+        $('wasteLabels').value = wastePerLane;
+      } else {
+        $('wasteLabels').value = '';
+      }
+    }
+
+    function updateAll() { updateDie(); updateWaste(); }
+
+    [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace, aroundDup]
+      .forEach(el => el.addEventListener('input', updateAll));
+    $('dieRegistration').addEventListener('input', updateWaste);
+    updateAll();
 
     // ─── Tabs ───────────────────────────────────────────────
     document.querySelectorAll('.tab').forEach(tab => {
@@ -693,7 +774,8 @@
     // ─── Calculate ──────────────────────────────────────────
     $('btnCalc').addEventListener('click', () => {
       const across = parseInt(acrossCount.value) || 1;
-      const around = parseInt(aroundCount.value) || 1;
+      const dup = parseInt(aroundDup.value) || 1;
+      const around = (parseInt(aroundCount.value) || 1) * dup;
 
       if (currentMode === 'amount') {
         calcByAmount(across, around);
@@ -711,12 +793,16 @@
       const actualRolls = copiesAcross * across;
       const extraRolls = actualRolls - Math.ceil(rollsNeeded);
       const revolutions = perRoll / around;
-      const totalCopies = revolutions * copiesAcross;
+      const prodCopies = revolutions * copiesAcross;
       const totalPrinted = actualRolls * perRoll;
 
-      const repeatLen = parseFloat(aroundRepeat.value) || 0;
+      const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const runPerRollM = (revolutions * repeatLen) / 1000;
       const totalRunM = runPerRollM * copiesAcross;
+      const dieReg = parseFloat($('dieRegistration').value) || 0;
+      const grandTotalM = totalRunM + dieReg;
+      const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
+      const totalCopies = prodCopies + wasteRevs;
 
       $('res-rollsNeeded').textContent = fmt(rollsNeeded);
       $('res-actualRolls').textContent = fmt(actualRolls);
@@ -726,16 +812,23 @@
       $('res-totalCopies').textContent = fmt(totalCopies);
       $('res-totalLabels').textContent = fmt(totalPrinted);
       $('res-runPerRoll').textContent = fmt(parseFloat(runPerRollM.toFixed(2)));
-      $('res-totalRun').textContent = fmt(parseFloat(totalRunM.toFixed(2)));
+      $('res-totalRun').textContent = fmt(parseFloat(grandTotalM.toFixed(2)));
 
-      $('summary-amount').innerHTML =
+      let amountSummary =
         `Die: <strong>${across} across × ${around} around</strong><br>` +
         `${fmt(total)} labels ÷ ${fmt(perRoll)}/roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
         `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
         (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
-        `${fmt(revolutions)} revolutions × ${fmt(copiesAcross)} copies = <strong>${fmt(totalCopies)} total die copies</strong><br>` +
+        `${fmt(revolutions)} revolutions × ${fmt(copiesAcross)} copies = <strong>${fmt(prodCopies)} production copies</strong>` +
+        (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalCopies)} total die copies</strong>` : ` = <strong>${fmt(totalCopies)} total die copies</strong>`) + `<br>` +
         `Total labels printed: <strong>${fmt(totalPrinted)}</strong><br>` +
-        `Run per roll: <strong>${fmt(parseFloat(runPerRollM.toFixed(2)))} m</strong> — Total run: <strong>${fmt(parseFloat(totalRunM.toFixed(2)))} m</strong>`;
+        `Run per roll: <strong>${fmt(parseFloat(runPerRollM.toFixed(2)))} m</strong> — Production run: <strong>${fmt(parseFloat(totalRunM.toFixed(2)))} m</strong>`;
+
+      if (dieReg > 0) {
+        amountSummary += `<br>Die registration: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+      }
+
+      $('summary-amount').innerHTML = amountSummary;
 
       $('results-amount').classList.add('visible');
       $('results-split').classList.remove('visible');
@@ -746,13 +839,17 @@
       const divider = parseInt($('splitDivider').value) || 0;
       const maxPerRoll = parseInt($('splitMaxPerRoll').value) || 0;
       const labelsPerRev = across * around;
-      const dieCopies = total / labelsPerRev;
-      const fullRevs = Math.ceil(dieCopies);
+      const dieCopiesRaw = total / labelsPerRev;
+      const fullRevs = Math.ceil(dieCopiesRaw);
       const rounded = fullRevs * labelsPerRev;
       const labelsPerLane = fullRevs * around; // labels on each across lane
 
-      const repeatLen = parseFloat(aroundRepeat.value) || 0;
+      const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const splitRunM = (fullRevs * repeatLen) / 1000;
+      const dieReg = parseFloat($('dieRegistration').value) || 0;
+      const grandTotalM = splitRunM + dieReg;
+      const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
+      const totalDieCopies = fullRevs + wasteRevs;
 
       // Determine roll breakdown per lane
       let rollsPerLane, fullRollLabels, lastRollLabels, totalRolls;
@@ -791,18 +888,19 @@
 
       // Populate result tiles
       $('res-labelsPerRev').textContent = fmt(labelsPerRev);
-      $('res-dieCopies').textContent = fmt(parseFloat(dieCopies.toFixed(4)));
+      $('res-dieCopies').textContent = fmt(totalDieCopies);
       $('res-totalLabelsSplit').textContent = fmt(rounded);
       $('res-splitTotalRolls').textContent = fmt(totalRolls);
       $('res-splitFullRollLabels').textContent = fmt(fullRollLabels);
       $('res-splitLastRoll').textContent = allSame ? '—' : fmt(lastRollLabels);
-      $('res-splitRun').textContent = fmt(parseFloat(splitRunM.toFixed(2)));
+      $('res-splitRun').textContent = fmt(parseFloat(grandTotalM.toFixed(2)));
 
       // Build summary
       let summary =
         `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
-        `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopies.toFixed(4)))} copies</strong> of the die<br>` +
-        `Rounded up: <strong>${fmt(rounded)} total labels</strong> (${fullRevs} full revolutions)<br>`;
+        `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopiesRaw.toFixed(4)))} copies</strong> of the die<br>` +
+        `Rounded up: <strong>${fmt(rounded)} total labels</strong> (${fullRevs} production copies)` +
+        (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') + `<br>`;
 
       if (rollsPerLane > 1) {
         const fullCount = allSame ? rollsPerLane : (rollsPerLane - 1);
@@ -815,7 +913,11 @@
         summary += `Split into <strong>${across} rolls</strong> × <strong>${fmt(fullRollLabels)} labels each</strong><br>`;
       }
 
-      summary += `Total run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
+      summary += `Production run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
+
+      if (dieReg > 0) {
+        summary += `<br>Die registration: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+      }
 
       $('summary-split').innerHTML = summary;
 
