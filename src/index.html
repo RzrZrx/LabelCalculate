@@ -112,6 +112,7 @@
       font-size: 2rem;
       font-weight: 800;
       background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
@@ -485,7 +486,7 @@
         <div class="die-row">
           <div class="die-row__label"></div>
           <div class="input-group">
-            <label for="acrossCC">C/C (<span class="unit">mm</span>)</label>
+            <label for="acrossCC">Center-to-Center (<span class="unit">mm</span>)</label>
             <input type="number" id="acrossCC" readonly>
           </div>
           <div class="input-group">
@@ -515,7 +516,7 @@
         <div class="die-row">
           <div class="die-row__label"></div>
           <div class="input-group">
-            <label for="aroundCC">C/C (<span class="unit">mm</span>)</label>
+            <label for="aroundCC">Center-to-Center (<span class="unit">mm</span>)</label>
             <input type="number" id="aroundCC" readonly>
           </div>
           <div class="input-group">
@@ -537,18 +538,18 @@
           <input type="number" id="aroundDup" placeholder="1" min="1" step="1" value="1">
         </div>
         <div class="input-group">
-          <label for="aroundRepeatDup">Repeat × Dup (<span class="unit">mm</span>)</label>
+          <label for="aroundRepeatDup">Repeat × Duplication (<span class="unit">mm</span>)</label>
           <input type="number" id="aroundRepeatDup" readonly>
         </div>
       </div>
       <div class="calc-inputs">
         <div class="input-group">
-          <label for="dieRegistration">Die Registration (<span class="unit">m</span>)</label>
-          <input type="number" id="dieRegistration" placeholder="e.g. 15" min="0" step="0.1">
+          <label for="wasteMeters">Setup Waste (meters)</label>
+          <input type="number" id="wasteMeters" placeholder="e.g. 15" min="0" step="0.1">
         </div>
         <div class="input-group">
-          <label for="wasteLabels">Setup Waste (labels/lane)</label>
-          <input type="number" id="wasteLabels" readonly>
+          <label for="wasteLabels">Setup Waste (labels)</label>
+          <input type="number" id="wasteLabels" placeholder="e.g. 500" min="0" step="1">
         </div>
       </div>
       <div class="repeat-warning" id="repeatWarning">⚠️ Effective repeat is below 148 mm converter minimum</div>
@@ -609,7 +610,7 @@
           </div>
           <div class="result-item">
             <div class="result-item__value" id="res-revolutions">—</div>
-            <div class="result-item__label">Revolutions / Roll</div>
+            <div class="result-item__label">Revolutions per Roll</div>
           </div>
           <div class="result-item highlight" style="border-width:2px;">
             <div class="result-item__value" id="res-totalCopies" style="font-size:1.8rem;">—</div>
@@ -621,7 +622,7 @@
           </div>
           <div class="result-item">
             <div class="result-item__value" id="res-runPerRoll">—</div>
-            <div class="result-item__label">Run / Roll (m)</div>
+            <div class="result-item__label">Run per Roll (m)</div>
           </div>
           <div class="result-item highlight">
             <div class="result-item__value" id="res-totalRun">—</div>
@@ -636,7 +637,7 @@
         <div class="result-grid">
           <div class="result-item accent-item">
             <div class="result-item__value" id="res-labelsPerRev">—</div>
-            <div class="result-item__label">Labels / Revolution</div>
+            <div class="result-item__label">Labels per Revolution</div>
           </div>
           <div class="result-item highlight" style="border-width:2px;">
             <div class="result-item__value" id="res-dieCopies" style="font-size:1.8rem;">—</div>
@@ -723,18 +724,49 @@
       }
     }
 
-    function updateWaste() {
-      const dieReg = parseFloat($('dieRegistration').value) || 0;
+    let lastWasteEdit = 'meters';
+
+    function updateWasteMeters() {
+      const dieReg = parseFloat($('wasteMeters').value);
       const effectiveRepeat = parseFloat(aroundRepeatDup.value) || 0;
       const dup = parseInt(aroundDup.value) || 1;
       const arCount = parseInt(aroundCount.value) || 0;
       const around = arCount * dup;
-      if (dieReg > 0 && effectiveRepeat > 0) {
+      
+      if (!isNaN(dieReg) && dieReg > 0 && effectiveRepeat > 0 && around > 0) {
         const wasteRevs = (dieReg * 1000) / effectiveRepeat;
         const wastePerLane = Math.ceil(wasteRevs) * around;
         $('wasteLabels').value = wastePerLane;
+      } else if (dieReg === 0) {
+        $('wasteLabels').value = 0;
       } else {
         $('wasteLabels').value = '';
+      }
+    }
+
+    function updateWasteLabels() {
+      const labels = parseInt($('wasteLabels').value);
+      const effectiveRepeat = parseFloat(aroundRepeatDup.value) || 0;
+      const dup = parseInt(aroundDup.value) || 1;
+      const arCount = parseInt(aroundCount.value) || 0;
+      const around = arCount * dup;
+
+      if (!isNaN(labels) && labels > 0 && effectiveRepeat > 0 && around > 0) {
+        const wasteRevs = labels / around;
+        const wasteM = (wasteRevs * effectiveRepeat) / 1000;
+        $('wasteMeters').value = parseFloat(wasteM.toFixed(3));
+      } else if (labels === 0) {
+        $('wasteMeters').value = 0;
+      } else {
+        $('wasteMeters').value = '';
+      }
+    }
+
+    function updateWaste() {
+      if (lastWasteEdit === 'meters') {
+        updateWasteMeters();
+      } else {
+        updateWasteLabels();
       }
     }
 
@@ -742,7 +774,17 @@
 
     [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace, aroundDup]
       .forEach(el => el.addEventListener('input', updateAll));
-    $('dieRegistration').addEventListener('input', updateWaste);
+      
+    $('wasteMeters').addEventListener('input', () => {
+      lastWasteEdit = 'meters';
+      updateWasteMeters();
+    });
+    
+    $('wasteLabels').addEventListener('input', () => {
+      lastWasteEdit = 'labels';
+      updateWasteLabels();
+    });
+    
     updateAll();
 
     // ─── Tabs ───────────────────────────────────────────────
@@ -799,7 +841,7 @@
       const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const runPerRollM = (revolutions * repeatLen) / 1000;
       const totalRunM = runPerRollM * copiesAcross;
-      const dieReg = parseFloat($('dieRegistration').value) || 0;
+      const dieReg = parseFloat($('wasteMeters').value) || 0;
       const grandTotalM = totalRunM + dieReg;
       const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
       const totalCopies = prodCopies + wasteRevs;
@@ -816,7 +858,7 @@
 
       let amountSummary =
         `Die: <strong>${across} across × ${around} around</strong><br>` +
-        `${fmt(total)} labels ÷ ${fmt(perRoll)}/roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
+        `${fmt(total)} labels ÷ ${fmt(perRoll)} per roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
         `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
         (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
         `${fmt(revolutions)} revolutions × ${fmt(copiesAcross)} copies = <strong>${fmt(prodCopies)} production copies</strong>` +
@@ -825,7 +867,7 @@
         `Run per roll: <strong>${fmt(parseFloat(runPerRollM.toFixed(2)))} m</strong> — Production run: <strong>${fmt(parseFloat(totalRunM.toFixed(2)))} m</strong>`;
 
       if (dieReg > 0) {
-        amountSummary += `<br>Die registration: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+        amountSummary += `<br>Setup waste: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
       }
 
       $('summary-amount').innerHTML = amountSummary;
@@ -846,7 +888,7 @@
 
       const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const splitRunM = (fullRevs * repeatLen) / 1000;
-      const dieReg = parseFloat($('dieRegistration').value) || 0;
+      const dieReg = parseFloat($('wasteMeters').value) || 0;
       const grandTotalM = splitRunM + dieReg;
       const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
       const totalDieCopies = fullRevs + wasteRevs;
@@ -916,7 +958,7 @@
       summary += `Production run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
 
       if (dieReg > 0) {
-        summary += `<br>Die registration: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+        summary += `<br>Setup waste: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
       }
 
       $('summary-split').innerHTML = summary;
