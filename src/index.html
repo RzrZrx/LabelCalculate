@@ -449,6 +449,92 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+
+    /* ─── Printable Job Ticket ───────────────────────────────── */
+    @media print {
+      body, .app {
+        background: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+      }
+      
+      /* Hide top header, tabs, inputs we don't need on paper, buttons, footer */
+      .header, .tabs, .calc-inputs, .btn-calculate, .footer {
+        display: none !important;
+      }
+      
+      /* Hide the new die search box */
+      .die-section > .input-group.full {
+        display: none !important;
+      }
+      
+      .card {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 2rem !important;
+      }
+      
+      .card__title {
+        color: black !important;
+        border-bottom: 2px solid black !important;
+        padding-bottom: 0.5rem !important;
+      }
+      
+      /* Strip styles from inputs so they print cleanly */
+      .input-group input {
+        border: none !important;
+        background: none !important;
+        color: black !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        padding: 0.1rem 0 !important;
+      }
+      
+      .input-group label {
+        color: #444 !important;
+        font-size: 0.8rem !important;
+      }
+      
+      .die-row__label {
+        color: black !important;
+        font-size: 0.9rem !important;
+      }
+      
+      .production-card {
+        border: 3px solid black !important;
+        background: none !important;
+        box-shadow: none !important;
+        margin: 3rem 0 !important;
+        padding: 3rem 1rem !important;
+      }
+      
+      .production-value {
+        color: black !important;
+        font-size: 4.5rem !important;
+      }
+      
+      .production-label {
+        color: black !important;
+        font-size: 1.25rem !important;
+      }
+      
+      .summary-box {
+        background: none !important;
+        border: none !important;
+        color: black !important;
+        font-size: 1.5rem !important;
+        line-height: 1.7 !important;
+        padding: 0 !important;
+      }
+      
+      .summary-box strong {
+        color: black !important;
+      }
+    }
   </style>
 </head>
 
@@ -466,6 +552,24 @@
     <section class="card" id="die-card">
       <div class="card__title"><span>⚙️</span> Die Configuration</div>
       <div class="die-section">
+        
+        <div class="input-group full" style="margin-bottom: 1.5rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+          <div id="manualUploadGroup" style="display: none;">
+            <label for="dieFile" style="margin-bottom: 0.3rem;">1. Load Die Database <span class="unit">(Select Excel File)</span></label>
+            <input type="file" id="dieFile" accept=".xlsx, .xls" style="padding: 0.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.05); margin-bottom: 1rem; border: none; cursor: pointer;">
+          </div>
+          
+          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span>Load Die <span class="unit">(Enter Die Number)</span></label>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="text" id="searchDie" placeholder="e.g. 0001" autocomplete="off" disabled style="flex: 1;">
+          </div>
+          <div id="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">Die not found.</div>
+          <div id="dieStatus" style="font-size: 0.75rem; margin-top: 0.35rem; color: var(--text-muted);">Auto-loading DieList.xlsx...</div>
+          
+          <button id="toggleManualDie" type="button" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show Manual Die Configuration ↓</button>
+        </div>
+
+        <div id="manualDieConfig">
         <!-- Across -->
         <div class="die-row">
           <div class="die-row__label">Across</div>
@@ -524,6 +628,7 @@
             <input type="number" id="aroundRepeat" readonly>
           </div>
           <div class="input-group"></div>
+        </div>
         </div>
       </div>
     </section>
@@ -591,11 +696,16 @@
         </div>
       </div>
       <!-- Production Card -->
-      <div class="card" id="production-card" style="display:none; text-align:center; padding:1.5rem; border:2px solid var(--accent); margin-bottom:1.5rem; background:rgba(100,255,100,0.05);">
-        <div style="color:var(--accent); font-size:0.9rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">Set Label Press To</div>
-        <div id="res-productionCopies" style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
+      <div class="card" id="production-card"
+        style="display:none; text-align:center; padding:1.5rem; border:2px solid var(--accent); margin-bottom:1.5rem; background:rgba(100,255,100,0.05);">
+        <div
+          style="color:var(--accent); font-size:0.9rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">
+          Set Label Press To</div>
+        <div id="res-productionCopies"
+          style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
         <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total Die Copies</div>
-        <div id="res-prodOnlyCopies" style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.25rem; font-style:italic;"></div>
+        <div id="res-prodOnlyCopies"
+          style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.25rem; font-style:italic;"></div>
       </div>
 
       <!-- Roll by Amount Results -->
@@ -616,6 +726,7 @@
         style="color:var(--accent);text-decoration:none;">github.com/RzrZrx/LabelCalculate</a></footer>
   </div>
 
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script>
     // ─── DOM Refs ────────────────────────────────────────────
     const $ = id => document.getElementById(id);
@@ -675,7 +786,7 @@
       const dup = parseInt(aroundDup.value) || 1;
       const arCount = parseInt(aroundCount.value) || 0;
       const around = arCount * dup;
-      
+
       if (!isNaN(dieReg) && dieReg > 0 && effectiveRepeat > 0 && around > 0) {
         const wasteRevs = (dieReg * 1000) / effectiveRepeat;
         const wastePerLane = Math.ceil(wasteRevs) * around;
@@ -717,19 +828,19 @@
 
     [acrossCount, acrossSize, acrossSpace, aroundCount, aroundSize, aroundSpace, aroundDup]
       .forEach(el => el.addEventListener('input', updateAll));
-      
+
     $('wasteMeters').addEventListener('input', () => {
       lastWasteEdit = 'meters';
       updateWasteMeters();
       calculateCurrent();
     });
-    
+
     $('wasteLabels').addEventListener('input', () => {
       lastWasteEdit = 'labels';
       updateWasteLabels();
       calculateCurrent();
     });
-    
+
     updateAll();
 
     // ─── Two-Way Total Labels / Rolls ───────────────────────
@@ -973,11 +1084,118 @@
     }
 
     // Auto-calculate on Enter key
-    document.querySelectorAll('#calc-card input').forEach(input => {
+    document.querySelectorAll('#calc-card input:not(#dieFile):not(#searchDie)').forEach(input => {
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') $('btnCalc').click();
       });
     });
+
+    // ─── Excel Die Loader ───────────────────────────────────
+    let dieDatabase = [];
+
+    function processExcelData(dataBuffer) {
+      try {
+        const workbook = XLSX.read(dataBuffer, {type: 'array'});
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        // Convert sheet to JSON array
+        dieDatabase = XLSX.utils.sheet_to_json(firstSheet);
+        
+        $('dieStatus').textContent = `Loaded ${dieDatabase.length} dies successfully.`;
+        $('dieStatus').style.color = 'var(--success)';
+        $('searchDie').disabled = false;
+        $('searchDie').focus();
+        $('manualUploadGroup').style.display = 'none';
+        $('searchLabelPrefix').textContent = '';
+        $('toggleManualDie').style.display = 'block';
+        $('manualDieConfig').style.display = 'none';
+      } catch (err) {
+        showManualUpload('Error: Invalid Excel file format.');
+      }
+    }
+
+    function showManualUpload(msg) {
+      $('dieStatus').textContent = msg || 'Auto-load requires a web server. Please select the file manually.';
+      $('dieStatus').style.color = 'var(--warning)';
+      $('manualUploadGroup').style.display = 'block';
+      $('searchLabelPrefix').textContent = '2. ';
+      $('searchDie').disabled = true;
+    }
+
+    // Try auto-loading on startup
+    fetch('dielist/DieList.xlsx')
+      .then(res => {
+        if (!res.ok) throw new Error("Fetch failed");
+        return res.arrayBuffer();
+      })
+      .then(buffer => processExcelData(new Uint8Array(buffer)))
+      .catch(err => {
+        showManualUpload();
+      });
+
+    $('dieFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      $('dieStatus').textContent = 'Loading...';
+      $('dieStatus').style.color = 'var(--text-muted)';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        processExcelData(new Uint8Array(e.target.result));
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    $('toggleManualDie').addEventListener('click', function() {
+      const config = $('manualDieConfig');
+      if (config.style.display === 'none') {
+        config.style.display = 'block';
+        this.textContent = 'Hide Manual Die Configuration ↑';
+        this.style.background = 'rgba(255,255,255,0.1)';
+      } else {
+        config.style.display = 'none';
+        this.textContent = 'Show Manual Die Configuration ↓';
+        this.style.background = 'rgba(255,255,255,0.05)';
+      }
+    });
+
+    $('searchDie').addEventListener('input', function(e) {
+      const val = e.target.value.trim().toLowerCase();
+      $('dieNotFound').style.display = 'none';
+      if (!val) return;
+
+      // Find die (allow pad start matching like "0001" vs "1")
+      const die = dieDatabase.find(d => 
+        String(d.Die_number).toLowerCase() === val || 
+        String(d.Die_number).padStart(4, '0') === val
+      );
+
+      if (die) {
+        // Auto-fill values if they exist in Excel
+        if (die.Across !== undefined) $('acrossCount').value = die.Across;
+        if (die.Across_size !== undefined) $('acrossSize').value = die.Across_size;
+        if (die.Acros_space !== undefined) $('acrossSpace').value = die.Acros_space;
+        
+        if (die.Around !== undefined) $('aroundCount').value = die.Around;
+        if (die.Around_size !== undefined) $('aroundSize').value = die.Around_size;
+        if (die.Around_space !== undefined) $('aroundSpace').value = die.Around_space;
+        
+        // Flash green to show match
+        const searchInput = $('searchDie');
+        searchInput.style.borderColor = 'var(--success)';
+        searchInput.style.boxShadow = '0 0 0 3px var(--success-glow)';
+        setTimeout(() => {
+          searchInput.style.borderColor = '';
+          searchInput.style.boxShadow = '';
+        }, 500);
+
+        updateDie();
+        calculateCurrent();
+      } else {
+        $('dieNotFound').style.display = 'block';
+      }
+    });
+
   </script>
 
 </body>
