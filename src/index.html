@@ -1200,7 +1200,7 @@
     }
 
     // Try auto-loading on startup
-    fetch('dielist/260316_Stansearkiv.xlsx')
+    fetch('data/260316_Stansearkiv.xlsx')
       .then(res => {
         if (!res.ok) throw new Error("Fetch failed");
         return res.arrayBuffer();
