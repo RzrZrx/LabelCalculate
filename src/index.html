@@ -596,8 +596,33 @@
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <input type="text" id="searchDie" placeholder="e.g. 0001" autocomplete="off" disabled style="flex: 1;">
           </div>
+          <div id="dieFeedback" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-sm); border-left: 3px solid var(--accent);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 700;">Die Details</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.5rem;">
+              <div id="df-tooth" style="display: none;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Z-Tooth</div>
+                <div id="df-tooth-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
+              </div>
+              <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Dimensions</div>
+                <div id="df-size-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
+              </div>
+              <div id="df-shape" style="display: none;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Shape</div>
+                <div id="df-shape-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
+              </div>
+              <div id="df-radius" style="display: none;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Corner Radius</div>
+                <div id="df-radius-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
+              </div>
+            </div>
+            <div id="df-comments" style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.1);">
+              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Comments</div>
+              <div id="df-comments-val" style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;"></div>
+            </div>
+          </div>
           <div id="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">Die not found.</div>
-          <div id="dieStatus" style="font-size: 0.75rem; margin-top: 0.35rem; color: var(--text-muted);">Auto-loading DieList.xlsx...</div>
+          <div id="dieStatus" style="font-size: 0.75rem; margin-top: 0.35rem; color: var(--text-muted);">Auto-loading 260316_Stansearkiv.xlsx...</div>
           
           <button id="toggleManualDie" type="button" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show Manual Die Configuration ↓</button>
         </div>
@@ -1131,7 +1156,27 @@
         const workbook = XLSX.read(dataBuffer, {type: 'array'});
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         // Convert sheet to JSON array
-        dieDatabase = XLSX.utils.sheet_to_json(firstSheet);
+        const rawDatabase = XLSX.utils.sheet_to_json(firstSheet);
+        
+        // Map new Norwegian columns to our standard structure
+        dieDatabase = rawDatabase.map(row => {
+          if (row.ID !== undefined) {
+             return {
+               Die_number: row.ID,
+               Across: row.AntBredde,
+               Across_size: row.Bredde,
+               Acros_space: row.BreddeMellomrom,
+               Around: row.AntHoyde,
+               Around_size: row.Hoyde,
+               Around_space: row.HoydeMellomrom,
+               Shape: row.Form,
+               CornerRadius: row.HjorneRadius,
+               Comments: row.Merknad,
+               ToothCount: row.Z
+             };
+          }
+          return row; // Keep old English structure if ID isn't present
+        });
         
         $('dieStatus').textContent = `Loaded ${dieDatabase.length} dies successfully.`;
         $('dieStatus').style.color = 'var(--success)';
@@ -1155,7 +1200,7 @@
     }
 
     // Try auto-loading on startup
-    fetch('dielist/DieList.xlsx')
+    fetch('dielist/260316_Stansearkiv.xlsx')
       .then(res => {
         if (!res.ok) throw new Error("Fetch failed");
         return res.arrayBuffer();
@@ -1195,6 +1240,7 @@
     $('searchDie').addEventListener('input', function(e) {
       const val = e.target.value.trim().toLowerCase();
       $('dieNotFound').style.display = 'none';
+      $('dieFeedback').style.display = 'none';
       if (!val) return;
 
       // Find die (allow pad start matching like "0001" vs "1")
@@ -1212,6 +1258,43 @@
         if (die.Around !== undefined) $('aroundCount').value = die.Around;
         if (die.Around_size !== undefined) $('aroundSize').value = die.Around_size;
         if (die.Around_space !== undefined) $('aroundSpace').value = die.Around_space;
+        
+        // Update Information Card
+        if (die.Across_size !== undefined && die.Around_size !== undefined) {
+          $('df-size-val').textContent = `${die.Across_size} × ${die.Around_size} mm`;
+          
+          if (die.ToothCount !== undefined) {
+            const rawZ = String(die.ToothCount);
+            const zSuffix = rawZ.toLowerCase().includes('z') ? '' : 'Z';
+            $('df-tooth-val').textContent = `${rawZ}${zSuffix}`;
+            $('df-tooth').style.display = 'block';
+          } else {
+            $('df-tooth').style.display = 'none';
+          }
+          
+          if (die.Shape) {
+            $('df-shape-val').textContent = die.Shape;
+            $('df-shape').style.display = 'block';
+          } else {
+            $('df-shape').style.display = 'none';
+          }
+          
+          if (die.CornerRadius !== undefined && die.CornerRadius !== null && die.CornerRadius !== '') {
+            $('df-radius-val').textContent = `${die.CornerRadius} mm`;
+            $('df-radius').style.display = 'block';
+          } else {
+            $('df-radius').style.display = 'none';
+          }
+          
+          if (die.Comments) {
+            $('df-comments-val').textContent = die.Comments;
+            $('df-comments').style.display = 'block';
+          } else {
+            $('df-comments').style.display = 'none';
+          }
+          
+          $('dieFeedback').style.display = 'block';
+        }
         
         // Flash green to show match
         const searchInput = $('searchDie');
