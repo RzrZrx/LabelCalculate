@@ -624,7 +624,7 @@
           <div id="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">Die not found.</div>
           <div id="dieStatus" style="font-size: 0.75rem; margin-top: 0.35rem; color: var(--text-muted);">Auto-loading 260316_Stansearkiv.xlsx...</div>
           
-          <button id="toggleManualDie" type="button" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show Manual Die Configuration ↓</button>
+          <button id="toggleManualDie" type="button" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show Die Configuration ↓</button>
         </div>
 
         <div id="manualDieConfig">
@@ -1225,11 +1225,11 @@
       const config = $('manualDieConfig');
       if (config.style.display === 'none') {
         config.style.display = 'block';
-        this.textContent = 'Hide Manual Die Configuration ↑';
+        this.textContent = 'Hide Die Configuration ↑';
         this.style.background = 'rgba(255,255,255,0.1)';
       } else {
         config.style.display = 'none';
-        this.textContent = 'Show Manual Die Configuration ↓';
+        this.textContent = 'Show Die Configuration ↓';
         this.style.background = 'rgba(255,255,255,0.05)';
       }
     });
