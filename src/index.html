@@ -749,7 +749,7 @@
           <input type="number" id="splitDivider" placeholder="e.g. 4" min="1" step="1">
         </div>
         <div class="input-group full">
-          <label for="splitMaxPerRoll">Max Labels per Roll (optional)</label>
+          <label for="splitMaxPerRoll">Exact Labels per Roll (optional)</label>
           <input type="number" id="splitMaxPerRoll" placeholder="e.g. 200" min="1" step="1">
         </div>
       </div>
@@ -1074,20 +1074,17 @@
       let rollsPerLane, fullRollLabels, lastRollLabels, totalRolls;
 
       if (maxPerRoll > 0) {
-        // Max per roll mode: split at revolution boundaries
-        const revsPerFullRoll = Math.floor(maxPerRoll / around);
-        const labelsInFullRoll = revsPerFullRoll * around;
-        if (labelsInFullRoll <= 0) {
-          // Max is less than one revolution — each revolution becomes a roll
-          rollsPerLane = fullRevs;
-          fullRollLabels = around;
-          lastRollLabels = around;
-        } else {
-          rollsPerLane = Math.ceil(labelsPerLane / labelsInFullRoll);
-          const remainder = labelsPerLane - (rollsPerLane - 1) * labelsInFullRoll;
-          fullRollLabels = labelsInFullRoll;
-          lastRollLabels = remainder > 0 ? remainder : labelsInFullRoll;
-        }
+        // Exact per roll mode: try to make rolls exactly this size, ending with one short roll
+        // We still must respect the cylinder revolution boundary
+        const revsPerExactRoll = Math.max(1, Math.round(maxPerRoll / around));
+        const labelsInExactRoll = revsPerExactRoll * around;
+        
+        rollsPerLane = Math.ceil(labelsPerLane / labelsInExactRoll);
+        fullRollLabels = labelsInExactRoll;
+        
+        // Calculate the remainder for the last roll
+        const remainder = labelsPerLane - ((rollsPerLane - 1) * labelsInExactRoll);
+        lastRollLabels = remainder > 0 ? remainder : labelsInExactRoll;
       } else if (divider > 1) {
         // Divider mode: split each lane into equal parts at revolution boundaries
         const revsPerSubRoll = Math.ceil(fullRevs / divider);
