@@ -732,9 +732,13 @@
           <label for="totalRolls">Total Rolls</label>
           <input type="number" id="totalRolls" placeholder="e.g. 20" min="1">
         </div>
-        <div class="input-group full">
+        <div class="input-group">
           <label for="perRoll">Labels per Roll</label>
           <input type="number" id="perRoll" placeholder="e.g. 500" min="1">
+        </div>
+        <div class="input-group">
+          <label for="perRollDm">Roll Length (<span class="unit">dm</span>)</label>
+          <input type="number" id="perRollDm" placeholder="e.g. 50" min="0" step="0.1">
         </div>
       </div>
 
@@ -915,6 +919,13 @@
         } else if (lastLabelsEdit === 'rolls' && !isNaN(rolls)) {
           $('totalLabels').value = rolls * perRoll;
         }
+      } else {
+        // If we don't know labels per roll, we can't link them. Clear the counterpart.
+        if (lastLabelsEdit === 'labels') {
+          $('totalRolls').value = '';
+        } else if (lastLabelsEdit === 'rolls') {
+          $('totalLabels').value = '';
+        }
       }
       calculateCurrent();
     }
@@ -929,7 +940,26 @@
       syncLabelsAndRolls();
     });
 
-    $('perRoll').addEventListener('input', syncLabelsAndRolls);
+    $('perRoll').addEventListener('input', () => {
+      lastLabelsEdit = 'labels';
+      syncLabelsAndRolls();
+    });
+
+    $('perRollDm').addEventListener('input', () => {
+      const dmRaw = parseFloat($('perRollDm').value);
+      if (!isNaN(dmRaw) && dmRaw > 0) {
+        const dup = parseInt(aroundDup.value) || 1;
+        const around = (parseInt(aroundCount.value) || 1) * dup;
+        const repeat = parseFloat(aroundRepeatDup.value) || 0;
+        if (around > 0 && repeat > 0) {
+          $('perRoll').value = Math.round((dmRaw * 100 / repeat) * around);
+        }
+      } else {
+        $('perRoll').value = '';
+      }
+      lastLabelsEdit = 'labels';
+      syncLabelsAndRolls();
+    });
 
     // ─── Tabs ───────────────────────────────────────────────
     document.querySelectorAll('.tab').forEach(tab => {
@@ -982,20 +1012,30 @@
       const totalRaw = parseInt($('totalLabels').value);
       const total = (!isNaN(totalRaw) && totalRaw > 0) ? totalRaw : 0;
       const perRollRaw = parseInt($('perRoll').value);
-      const perRoll = (!isNaN(perRollRaw) && perRollRaw > 0) ? perRollRaw : 1;
-
-      // Only clear if the total is missing. If total is there but perRoll is missing, 
-      // perRoll defaults to 1 and we can still calculate.
-      if (total === 0) {
+      
+      // If either Total Labels or Labels per Roll is missing, we don't have enough to calculate
+      if (total === 0 || isNaN(perRollRaw) || perRollRaw === 0) {
         // Only clearing production card and summary, detailed tiles are removed
         $('res-productionCopies').textContent = '—';
         $('res-prodOnlyCopies').textContent = '';
-        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
+        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> and <strong>Labels per Roll</strong> to calculate.';
         $('production-card').style.display = 'none';
         $('results-amount').classList.add('visible');
         $('results-split').classList.remove('visible');
+        
+        const dmLabel = document.querySelector('label[for="perRollDm"]');
+        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+        
+        // Clear the auto-filled dm length if we aren't actively typing it
+        if (document.activeElement !== $('perRollDm')) {
+          $('perRollDm').value = '';
+        }
         return;
       }
+      
+      const perRoll = perRollRaw;
+      const dmLabel = document.querySelector('label[for="perRollDm"]');
+      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>) for ${perRoll} Labels`;
 
       const rollsNeeded = total / perRoll;
       const copiesAcross = Math.ceil(rollsNeeded / across);
@@ -1007,6 +1047,12 @@
 
       const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const runPerRollM = (revolutions * repeatLen) / 1000;
+      
+      // Update Roll Length in dm dynamically, unless the user is actively typing in it
+      if (document.activeElement !== $('perRollDm')) {
+        $('perRollDm').value = parseFloat((runPerRollM * 10).toFixed(2));
+      }
+      
       const totalRunM = runPerRollM * copiesAcross;
       const dieReg = parseFloat($('wasteMeters').value) || 0;
       const grandTotalM = totalRunM + dieReg;
@@ -1138,10 +1184,13 @@
       $('results-amount').classList.remove('visible');
     }
 
-    // Auto-calculate on Enter key
+    // Auto-calculate on Enter key and auto-select text on focus
     document.querySelectorAll('#calc-card input:not(#dieFile):not(#searchDie)').forEach(input => {
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') $('btnCalc').click();
+      });
+      input.addEventListener('focus', e => {
+        e.target.select();
       });
     });
 
