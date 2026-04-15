@@ -372,6 +372,36 @@
       color: var(--accent);
     }
 
+    /* ─── Reset Button ───────────────────────────────────────── */
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: var(--radius-sm);
+      background: rgba(248, 113, 113, 0.08);
+      color: rgba(248, 113, 113, 0.85);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.03em;
+    }
+
+    .btn-reset:hover {
+      background: rgba(248, 113, 113, 0.18);
+      border-color: rgba(248, 113, 113, 0.6);
+      color: #f87171;
+      transform: translateY(-1px);
+      box-shadow: 0 0 16px rgba(248, 113, 113, 0.15);
+    }
+
+    .btn-reset:active {
+      transform: translateY(0);
+    }
+
     /* ─── Calculate Button ───────────────────────────────────── */
     .btn-calculate {
       display: block;
@@ -575,10 +605,13 @@
 
   <div class="app">
     <!-- Header -->
-    <header class="header">
+    <header class="header" style="position: relative;">
       <div class="header__icon">🏷️</div>
       <h1>Label Run Calculator</h1>
       <p>Calculate label production runs from die configuration</p>
+      <button id="btnReset" class="btn-reset" type="button" style="position: absolute; top: 0; right: 0;" title="Clear all inputs and results">
+        ↺ Reset
+      </button>
     </header>
 
     <!-- Die Configuration -->
@@ -1193,6 +1226,60 @@
         e.target.select();
       });
     });
+
+    // ─── Reset ──────────────────────────────────────────────
+    function resetAll() {
+      // Clear die search
+      $('searchDie').value = '';
+      $('dieFeedback').style.display = 'none';
+      $('dieNotFound').style.display = 'none';
+
+      // Clear die config inputs
+      ['acrossCount','acrossSize','acrossSpace',
+       'aroundCount','aroundSize','aroundSpace'].forEach(id => $(id).value = '');
+
+      // Reset duplication to 1
+      $('aroundDup').value = '1';
+
+      // Clear auto-calculated readonly fields
+      ['acrossCC','acrossTotal','aroundCC','aroundRepeat','aroundRepeatDup'].forEach(id => $(id).value = '');
+
+      // Clear waste
+      $('wasteMeters').value = '';
+      $('wasteLabels').value = '';
+
+      // Clear Roll by Amount inputs
+      $('totalLabels').value = '';
+      $('totalRolls').value = '';
+      $('perRoll').value = '';
+      $('perRollDm').value = '';
+
+      // Clear Split Roll inputs
+      $('totalLabelsSplit').value = '';
+      $('splitDivider').value = '';
+      $('splitMaxPerRoll').value = '';
+
+      // Reset dm label back to plain text
+      const dmLabel = document.querySelector('label[for="perRollDm"]');
+      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+
+      // Hide results and production card
+      $('production-card').style.display = 'none';
+      $('results-amount').classList.remove('visible');
+      $('results-split').classList.remove('visible');
+      $('summary-amount').innerHTML = '';
+      $('summary-split').innerHTML = '';
+      $('res-productionCopies').textContent = '—';
+      $('res-prodOnlyCopies').textContent = '';
+
+      // Hide repeat warning
+      $('repeatWarning').classList.remove('visible');
+
+      // Re-run to clear computed values cleanly
+      updateAll();
+    }
+
+    $('btnReset').addEventListener('click', resetAll);
 
     // ─── Excel Die Loader ───────────────────────────────────
     let dieDatabase = [];
