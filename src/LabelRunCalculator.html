@@ -612,25 +612,26 @@
 
   <div class="app">
     <!-- Header -->
-    <header class="header">
+    <header class="header" style="position:relative; padding-top:1rem;">
       <div class="header__icon">🏷️</div>
-      <h1>Label Calculator</h1>
+      <h1 data-i18n="title" style="margin:0;">Label Calculator</h1>
+      <button id="langToggle" style="position:absolute; right:0; top:1.5rem; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-primary); padding:0.4rem 0.8rem; font-size:0.8rem; cursor:pointer;" title="Switch Language">🌐 EN</button>
     </header>
 
     <!-- Mode Tabs (top-level navigation) -->
     <div class="tabs" style="margin-bottom:0.75rem;">
-      <button class="tab active" id="tab-amount" data-mode="amount">Complete Rolls</button>
-      <button class="tab" id="tab-split" data-mode="split">Split Roll</button>
-      <button class="tab" id="tab-rollcalc" data-mode="rollcalc">Labels per Roll</button>
+      <button class="tab active" id="tab-amount" data-mode="amount" data-i18n="navAmount">Complete Rolls</button>
+      <button class="tab" id="tab-split" data-mode="split" data-i18n="navSplit">Split Roll</button>
+      <button class="tab" id="tab-rollcalc" data-mode="rollcalc" data-i18n="navRollCalc">Labels per Roll</button>
     </div>
-    <p id="die-subtitle" style="font-size:0.82rem; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.5;">
+    <p id="die-subtitle" data-i18n="subtitle" style="font-size:0.82rem; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.5;">
       Calculate label production runs from die configuration</p>
 
     <!-- Die Configuration -->
     <section class="card" id="die-card">
       <div class="card__title" style="display:flex; align-items:center; justify-content:space-between;">
-        <span><span>⚙️</span> Die Configuration</span>
-        <button id="btnReset" class="btn-reset" type="button" title="Clear all inputs and results"
+        <span><span>⚙️</span> <span data-i18n="dieConfig">Die Configuration</span></span>
+        <button id="btnReset" class="btn-reset" type="button" title="Clear all inputs and results" data-i18n="reset"
           style="font-size:0.78rem; padding:0.3rem 0.75rem;">
           ↺ Reset
         </button>
@@ -640,33 +641,31 @@
         <div class="input-group full"
           style="margin-bottom: 1.5rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
           <div id="manualUploadGroup" style="display: none;">
-            <label for="dieFile" style="margin-bottom: 0.3rem;">1. Load Die Database <span class="unit">(Select Excel
-                File)</span></label>
+            <label for="dieFile" style="margin-bottom: 0.3rem;"><span data-i18n="step1">1. Load Die Database</span> <span class="unit" data-i18n="selectFile">(Select Excel File)</span></label>
             <input type="file" id="dieFile" accept=".xlsx, .xls"
               style="padding: 0.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.05); margin-bottom: 1rem; border: none; cursor: pointer;">
           </div>
 
-          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span>Enter Die
-            Number</label>
+          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span><span data-i18n="enterDie">Enter Die Number</span></label>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <input type="text" id="searchDie" placeholder="e.g. 0001" autocomplete="off" disabled style="flex: 1;">
+            <input type="text" id="searchDie" placeholder="e.g. 0001" data-i18n="placeholderDie" autocomplete="off" disabled style="flex: 1;">
           </div>
           <div id="dieFeedback"
             style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-sm); border-left: 3px solid var(--accent);">
-            <div
+            <div data-i18n="dieDetails"
               style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 700;">
               Die Details</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.5rem;">
               <div id="df-tooth" style="display: none;">
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Z-Tooth</div>
+                <div data-i18n="zTooth" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Z-Tooth</div>
                 <div id="df-tooth-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Dimensions</div>
+                <div data-i18n="dimensions" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Dimensions</div>
                 <div id="df-size-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div id="df-radius" style="display: none;">
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Corner Radius</div>
+                <div data-i18n="radius" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Corner Radius</div>
                 <div id="df-radius-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div id="df-shape" style="display: none;">
@@ -676,22 +675,22 @@
             </div>
             <div id="df-comments"
               style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.1);">
-              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Comments</div>
+              <div data-i18n="comments" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Comments</div>
               <div id="df-comments-val" style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">
               </div>
             </div>
           </div>
-          <div id="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">
+          <div id="dieNotFound" data-i18n="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">
             Die not found.</div>
           <div style="margin-top: 0.35rem;">
-            <span id="dieStatus" style="font-size: 0.75rem; color: var(--text-muted);">Auto-loading
+            <span id="dieStatus" data-i18n="autoLoading" style="font-size: 0.75rem; color: var(--text-muted);">Auto-loading
               260316_Stansearkiv.xlsx...</span>
-            <span id="globalAroundSpaceWarning"
+            <span id="globalAroundSpaceWarning" data-i18n="aroundWarnGlobal"
               style="font-size: 0.75rem; color: var(--warning); margin-left: 0.5rem; display: none;">⚠️ Around space Not
               in die record — defaulted to 3 mm. Adjust if known.</span>
           </div>
 
-          <button id="toggleManualDie" type="button"
+          <button id="toggleManualDie" type="button" data-i18n="showDieConfig"
             style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show
             Die Configuration ↓</button>
         </div>
@@ -699,17 +698,17 @@
         <div id="manualDieConfig">
           <!-- Across -->
           <div class="die-row">
-            <div class="die-row__label">Across</div>
+            <div class="die-row__label" data-i18n="across">Across</div>
             <div class="input-group">
-              <label for="acrossCount">Count</label>
+              <label for="acrossCount" data-i18n="acrossCount">Count</label>
               <input type="number" id="acrossCount" placeholder="e.g. 6" min="1" step="1">
             </div>
             <div class="input-group">
-              <label for="acrossSize">Size (<span class="unit">mm</span>)</label>
+              <label for="acrossSize"><span data-i18n="acrossSize">Size</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="acrossSize" placeholder="e.g. 53" min="0" step="0.001">
             </div>
             <div class="input-group">
-              <label for="acrossSpace">Space (<span class="unit">mm</span>)</label>
+              <label for="acrossSpace"><span data-i18n="acrossSpace">Space</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="acrossSpace" placeholder="e.g. 3" min="0" step="0.001">
             </div>
           </div>
@@ -717,11 +716,11 @@
           <div class="die-row">
             <div class="die-row__label"></div>
             <div class="input-group">
-              <label for="acrossCC">Center-to-Center (<span class="unit">mm</span>)</label>
+              <label for="acrossCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="acrossCC" readonly>
             </div>
             <div class="input-group">
-              <label for="acrossTotal">Total Width (<span class="unit">mm</span>)</label>
+              <label for="acrossTotal"><span data-i18n="acrossTotal">Total Width</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="acrossTotal" readonly>
             </div>
             <div class="input-group"></div>
@@ -729,22 +728,22 @@
 
           <!-- Around -->
           <div class="die-row">
-            <div class="die-row__label">Around</div>
+            <div class="die-row__label" data-i18n="around">Around</div>
             <div class="input-group">
-              <label for="aroundCount">Count</label>
+              <label for="aroundCount" data-i18n="acrossCount">Count</label>
               <input type="number" id="aroundCount" placeholder="e.g. 5" min="1" step="1">
             </div>
             <div class="input-group">
-              <label for="aroundSize">Size (<span class="unit">mm</span>)</label>
+              <label for="aroundSize"><span data-i18n="acrossSize">Size</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="aroundSize" placeholder="e.g. 30" min="0" step="0.001">
             </div>
             <div class="input-group">
-              <label for="aroundSpace">Space (<span class="unit">mm</span>)</label>
+              <label for="aroundSpace"><span data-i18n="acrossSpace">Space</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="aroundSpace" placeholder="e.g. 3" min="0" step="0.001">
               <div id="aroundSpaceWarning"
                 style="display:none; margin-top:0.35rem; font-size:0.73rem; color:var(--warning); align-items:center; gap:0.4rem;">
                 <span style="font-size:1.25rem;">⚠️</span>
-                <div style="line-height:1.4;">Not in die record — defaulted to <strong>3 mm</strong>.<br>Adjust if
+                <div style="line-height:1.4;" data-i18n="aroundWarnLocal">Not in die record — defaulted to <strong>3 mm</strong>.<br>Adjust if
                   known.</div>
               </div>
             </div>
@@ -753,11 +752,11 @@
           <div class="die-row">
             <div class="die-row__label"></div>
             <div class="input-group">
-              <label for="aroundCC">Center-to-Center (<span class="unit">mm</span>)</label>
+              <label for="aroundCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="aroundCC" readonly>
             </div>
             <div class="input-group">
-              <label for="aroundRepeat">Repeat (<span class="unit">mm</span>)</label>
+              <label for="aroundRepeat"><span data-i18n="repeat">Repeat</span> (<span class="unit">mm</span>)</label>
               <input type="number" id="aroundRepeat" readonly>
             </div>
             <div class="input-group"></div>
@@ -768,30 +767,30 @@
 
     <!-- Calculation Mode -->
     <section class="card" id="calc-card">
-      <div class="card__title"><span>📐</span> Calculation</div>
+      <div class="card__title"><span>📐</span> <span data-i18n="calculation">Calculation</span></div>
 
       <div class="calc-inputs">
         <div class="input-group">
-          <label for="aroundDup">Around Duplication</label>
+          <label for="aroundDup" data-i18n="aroundDup">Around Duplication</label>
           <input type="number" id="aroundDup" placeholder="1" min="1" step="1" value="1">
           <div class="repeat-warning" id="repeatWarning">
             <span style="font-size:1.25rem;">⚠️</span>
-            <div style="line-height:1.4;">Effective repeat is below 148 mm converter minimum,<br>please increase the
+            <div style="line-height:1.4;" data-i18n="repeatWarn">Effective repeat is below 148 mm converter minimum,<br>please increase the
               duplication</div>
           </div>
         </div>
         <div class="input-group">
-          <label for="aroundRepeatDup">Repeat × Duplication (<span class="unit">mm</span>)</label>
+          <label for="aroundRepeatDup"><span data-i18n="repeatDup">Repeat × Duplication</span> (<span class="unit">mm</span>)</label>
           <input type="number" id="aroundRepeatDup" readonly>
         </div>
       </div>
       <div class="calc-inputs">
         <div class="input-group">
-          <label for="wasteMeters">Setup Waste (meters)</label>
+          <label for="wasteMeters" data-i18n="setupWasteMeters">Setup Waste (meters)</label>
           <input type="number" id="wasteMeters" placeholder="e.g. 15" min="0" step="0.1">
         </div>
         <div class="input-group">
-          <label for="wasteLabels">Setup Waste (labels)</label>
+          <label for="wasteLabels" data-i18n="setupWasteLabels">Setup Waste (labels)</label>
           <input type="number" id="wasteLabels" placeholder="e.g. 500" min="0" step="1">
         </div>
       </div>
@@ -801,19 +800,19 @@
       <!-- Roll by Amount Inputs -->
       <div class="calc-inputs" id="inputs-amount">
         <div class="input-group">
-          <label for="totalLabels">Total Labels</label>
+          <label for="totalLabels" data-i18n="totalLabels">Total Labels</label>
           <input type="number" id="totalLabels" placeholder="e.g. 10000" min="1">
         </div>
         <div class="input-group">
-          <label for="totalRolls">Total Rolls</label>
+          <label for="totalRolls" data-i18n="totalRolls">Total Rolls</label>
           <input type="number" id="totalRolls" placeholder="e.g. 20" min="1">
         </div>
         <div class="input-group">
-          <label for="perRoll">Labels per Roll</label>
+          <label for="perRoll" data-i18n="perRoll">Labels per Roll</label>
           <input type="number" id="perRoll" placeholder="e.g. 500" min="1">
         </div>
         <div class="input-group">
-          <label for="perRollDm">Roll Length (<span class="unit">m</span>)</label>
+          <label for="perRollDm" data-i18n="rollLengthM">Roll Length (<span class="unit">m</span>)</label>
           <input type="number" id="perRollDm" placeholder="e.g. 5" min="0" step="0.001">
         </div>
       </div>
@@ -821,19 +820,19 @@
       <!-- Split Roll Inputs -->
       <div class="calc-inputs" id="inputs-split" style="display:none;">
         <div class="input-group">
-          <label for="totalLabelsSplit">Total Labels</label>
+          <label for="totalLabelsSplit" data-i18n="totalLabels">Total Labels</label>
           <input type="number" id="totalLabelsSplit" placeholder="e.g. 10000" min="1">
         </div>
         <div class="input-group">
-          <label for="splitDivider">Divider (optional)</label>
+          <label for="splitDivider" data-i18n="divider">Divider (optional)</label>
           <input type="number" id="splitDivider" placeholder="e.g. 4" min="1" step="1">
         </div>
         <div class="input-group">
-          <label for="splitMaxPerRoll">Exact Labels per Roll (optional)</label>
+          <label for="splitMaxPerRoll" data-i18n="exactPerRoll">Exact Labels per Roll (optional)</label>
           <input type="number" id="splitMaxPerRoll" placeholder="e.g. 500" min="1" step="1">
         </div>
         <div class="input-group">
-          <label for="splitMinSplice">Min. Splice per Roll (optional)</label>
+          <label for="splitMinSplice" data-i18n="minSplice">Min. Splice per Roll (optional)</label>
           <input type="number" id="splitMinSplice" placeholder="e.g. 250" min="1" step="1"
             title="If press must cut smaller than exact roll size">
         </div>
@@ -841,14 +840,14 @@
       <!-- Production Card -->
       <div class="card" id="production-card"
         style="display:none; text-align:center; padding:1.5rem; border:2px solid var(--accent); margin-bottom:1.5rem; background:rgba(100,255,100,0.05);">
-        <div
+        <div data-i18n="setLabelPressTo"
           style="color:var(--accent); font-size:0.9rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">
           Set Label Press To</div>
         <div id="res-productionCopies"
           style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
         <div id="res-totalMeters"
           style="font-size:1.4rem; font-weight:600; color:var(--text-secondary); margin-top:0.4rem;"></div>
-        <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total Die Copies</div>
+        <div data-i18n="totalDieCopies" style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total Die Copies</div>
         <div id="res-prodOnlyCopies"
           style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.25rem; font-style:italic;"></div>
       </div>
@@ -868,59 +867,56 @@
 
     <!-- Labels per Roll Calculator (standalone card) -->
     <section class="card" id="rollcalc-card" style="display:none;">
-      <div class="card__title"><span>🧮</span> Labels per Roll Calculator</div>
+      <div class="card__title"><span>🧮</span> <span data-i18n="navRollCalc">Labels per Roll Calculator</span></div>
       <div id="inputs-rollcalc">
         <div
           style="margin-bottom:1.25rem; padding:1rem 1.25rem; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-left:3px solid var(--accent); border-radius:var(--radius-sm); font-size:0.82rem; color:var(--text-secondary); line-height:1.75;">
-          <div
+          <div data-i18n="rcHowTo"
             style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent); margin-bottom:0.6rem;">
             How to use</div>
           <ol style="margin:0; padding-left:1.25rem;">
-            <li>Enter the <strong style="color:var(--text-primary);">Core Inner Diameter</strong> (mm) — the inner bore
+            <li data-i18n="rcTip1">Enter the <strong style="color:var(--text-primary);">Core Inner Diameter</strong> (mm) — the inner bore
               of the cardboard or plastic core the labels are wound on. Common sizes: 25 mm (1″), 38 mm (1.5″), 76 mm
               (3″).</li>
-            <li>Enter the <strong style="color:var(--text-primary);">Roll Outer Diameter</strong> (mm) — the full
+            <li data-i18n="rcTip2">Enter the <strong style="color:var(--text-primary);">Roll Outer Diameter</strong> (mm) — the full
               diameter of the wound roll including all the label material.</li>
-            <li>Enter the <strong style="color:var(--text-primary);">Label Repeat</strong> (mm) — the distance from the
+            <li data-i18n="rcTip3">Enter the <strong style="color:var(--text-primary);">Label Repeat</strong> (mm) — the distance from the
               top of one label to the top of the next, including the gap between labels.</li>
-            <li>Enter the <strong style="color:var(--text-primary);">Material Thickness</strong> (µm) — the combined
+            <li data-i18n="rcTip4">Enter the <strong style="color:var(--text-primary);">Material Thickness</strong> (µm) — the combined
               thickness of the label face stock <em>plus</em> the liner. Use the preset dropdown for common label
               materials, or enter your own value.</li>
-            <li>The calculator will instantly show the <strong style="color:var(--text-primary);">approximate number of
+            <li data-i18n="rcTip5">The calculator will instantly show the <strong style="color:var(--text-primary);">approximate number of
                 labels per roll</strong> along with the estimated roll length in metres.</li>
           </ol>
         </div>
-        <div class="calc-inputs">
+        <div class="calc-inputs" style="grid-template-columns: 1fr 1fr;">
           <div class="input-group">
-            <label for="rc-coreId">Core Inner Diameter (<span class="unit">mm</span>)</label>
-            <input type="number" id="rc-coreId" placeholder="e.g. 76" min="0" step="0.1">
+            <label for="rc-coreId"><span data-i18n="coreId">Core Inner Diameter</span> (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-coreId" placeholder="e.g. 76" step="1" min="1">
           </div>
           <div class="input-group">
-            <label for="rc-rollOd">Roll Outer Diameter (<span class="unit">mm</span>)</label>
-            <input type="number" id="rc-rollOd" placeholder="e.g. 200" min="0" step="0.1">
+            <label for="rc-rollOd"><span data-i18n="rollOd">Roll Outer Diameter</span> (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-rollOd" placeholder="e.g. 300" step="1" min="1">
           </div>
           <div class="input-group">
-            <label for="rc-repeat">Label Repeat (<span class="unit">mm</span>)</label>
-            <input type="number" id="rc-repeat" placeholder="e.g. 50" min="0" step="0.01">
+            <label for="rc-repeat"><span data-i18n="labelRepeat">Label Repeat</span> (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-repeat" placeholder="e.g. 33" step="0.001" min="0">
           </div>
           <div class="input-group">
-            <label for="rc-thickness">Material Thickness (<span class="unit">µm</span>)</label>
-            <input type="number" id="rc-thickness" placeholder="e.g. 160" min="1" step="1">
+            <label for="rc-thickness"><span data-i18n="matThickness">Material Thickness</span> (<span class="unit">µm</span>)</label>
+            <input type="number" id="rc-thickness" placeholder="e.g. 150" step="1" min="1">
           </div>
           <div class="input-group full">
-            <label for="rc-preset">Preset Thicknesses</label>
+            <label for="rc-preset" data-i18n="presetThickness">Preset Thicknesses</label>
             <select id="rc-preset"
               style="background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 0.75rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; width:100%; cursor:pointer; outline:none;">
-              <option value="" style="background:#1e293b; color:#f8fafc;">— select a preset to fill thickness —</option>
-              <option value="90" style="background:#1e293b; color:#f8fafc;">Thermal paper, direct (90 µm)</option>
-              <option value="110" style="background:#1e293b; color:#f8fafc;">Thermal paper, top-coated (110 µm)</option>
-              <option value="130" style="background:#1e293b; color:#f8fafc;">Thermal transfer paper (130 µm)</option>
-              <option value="160" style="background:#1e293b; color:#f8fafc;">Thermal transfer paper, premium (160 µm)
-              </option>
-              <option value="100" style="background:#1e293b; color:#f8fafc;">Polyester / PET (100 µm)</option>
-              <option value="150" style="background:#1e293b; color:#f8fafc;">Polypropylene / PP (150 µm)</option>
-              <option value="190" style="background:#1e293b; color:#f8fafc;">Kimdura / Polypropylene thick (190 µm)
-              </option>
+              <option value="" style="background:#1e293b; color:#f8fafc;" data-i18n="presetSelect">— select a preset to fill thickness —</option>
+              <option value="90" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermal">Thermal paper, direct (90 µm)</option>
+              <option value="110" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTop">Thermal paper, top-coated (110 µm)</option>
+              <option value="160" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTrans">Thermal transfer paper, premium (160 µm)</option>
+              <option value="100" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPet">Polyester / PET (100 µm)</option>
+              <option value="150" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPp">Polypropylene / PP (150 µm)</option>
+              <option value="190" style="background:#1e293b; color:#f8fafc;" data-i18n="presetKimdura">Kimdura / Polypropylene thick (190 µm)</option>
             </select>
           </div>
         </div>
@@ -951,6 +947,9 @@
 
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script>
+    // ─── Configuration ───────────────────────────────────────
+    const DEFAULT_LANG = 'no'; // Set to 'en' or 'no'
+
     // ─── DOM Refs ────────────────────────────────────────────
     const $ = id => document.getElementById(id);
 
@@ -970,6 +969,282 @@
 
     const MIN_REPEAT = 148;
     let currentMode = 'amount';
+
+    // ─── i18n Translation Engine ──────────────────────────
+    const translations = {
+      en: {
+        // UI
+        title: "Label Calculator",
+        navAmount: "Roll by Amount",
+        navSplit: "Split Roll",
+        navRollCalc: "Labels per Roll",
+        subtitle: "Calculate label production runs from die configuration",
+        dieConfig: "Die Configuration",
+        reset: "↺ Reset",
+        step1: "1. Load Die Database",
+        selectFile: "(Select Excel File)",
+        enterDie: "Enter Die Number",
+        placeholderDie: "e.g. 0001",
+        dieDetails: "Die Details",
+        zTooth: "Z-Tooth",
+        shape: "Shape",
+        radius: "Radius",
+        comments: "Comments",
+        dieNotFound: "Die not found.",
+        autoLoading: "Auto-loading 260316_Stansearkiv.xlsx...",
+        aroundWarnGlobal: "⚠️ Around space Not in die record — defaulted to 3 mm. Adjust if known.",
+        showDieConfig: "Show Die Configuration ↓",
+        hideDieConfig: "Hide Die Configuration ↑",
+        across: "Across",
+        acrossCount: "Count",
+        acrossSize: "Size",
+        acrossSpace: "Space",
+        acrossCC: "Center-to-Center",
+        acrossTotal: "Total Width",
+        around: "Around",
+        repeat: "Repeat",
+        duplication: "Duplication",
+        aroundWarnLocal: "Not in die record — defaulted to <strong>3 mm</strong>.<br>Adjust if known.",
+        repeatWarn: "Effective repeat is below 148 mm converter minimum,<br>please increase the duplication",
+        calculation: "Calculation",
+        aroundDup: "Around Duplication",
+        repeatDup: "Repeat × Duplication",
+        setupWasteMeters: "Setup Waste (meters)",
+        setupWasteLabels: "Setup Waste (labels)",
+        wasteMeter: "Setup Waste meters (optional)",
+        diesLoaded: "Loaded {count} dies successfully.",
+        errExcelFormat: "Error: Invalid Excel file format.",
+        errAutoLoad: "Auto-load requires a web server. Please select the file manually.",
+        loading: "Loading...",
+        hideDieConfig: "Hide Die Configuration ↑",
+        showDieConfig: "Show Die Configuration ↓",
+        
+        // Amount Mode
+        totalLabels: "Total Labels",
+        totalRolls: "Total Rolls",
+        perRoll: "Labels per Roll",
+        rollLengthM: "Roll Length in (<span class=\"unit\">m</span>)",
+        rollLengthMFull: "Roll Length in (<span class=\"unit\">m</span>) — Full Run",
+        rollLengthMFor: "Roll Length in (<span class=\"unit\">m</span>) for {labels} Labels",
+
+        // Split Mode
+        divider: "Divider (optional)",
+        exactPerRoll: "Exact Labels per Roll (optional)",
+        minSplice: "Min. Splice per Roll (optional)",
+        minSpliceTitle: "If press must cut smaller than exact roll size",
+
+        // Roll Labels Calc
+        rcHowTo: "How to use",
+        rcTip1: "Enter the <strong style=\"color:var(--text-primary);\">Core Inner Diameter</strong> (mm) — the inner bore of the cardboard or plastic core the labels are wound on. Common sizes: 25 mm (1″), 38 mm (1.5″), 76 mm (3″).",
+        rcTip2: "Enter the <strong style=\"color:var(--text-primary);\">Roll Outer Diameter</strong> (mm) — the full diameter of the wound roll including all the label material.",
+        rcTip3: "Enter the <strong style=\"color:var(--text-primary);\">Label Repeat</strong> (mm) — the distance from the top of one label to the top of the next, including the gap between labels.",
+        rcTip4: "Enter the <strong style=\"color:var(--text-primary);\">Material Thickness</strong> (µm) — the combined thickness of the label face stock <em>plus</em> the liner. Use the preset dropdown for common label materials, or enter your own value.",
+        rcTip5: "The calculator will instantly show the <strong style=\"color:var(--text-primary);\">approximate number of labels per roll</strong> along with the estimated roll length in metres.",
+        coreId: "Core Inner Diameter",
+        rollOd: "Roll Outer Diameter",
+        labelRepeat: "Label Repeat",
+        matThickness: "Material Thickness",
+        presetThickness: "Preset Thicknesses",
+        presetSelect: "— select a preset to fill thickness —",
+        presetThermal: "Thermal paper, direct (90 µm)",
+        presetThermalTop: "Thermal paper, top-coated (110 µm)",
+        presetThermalTrans: "Thermal transfer paper, premium (160 µm)",
+        presetPet: "Polyester / PET (100 µm)",
+        presetPp: "Polypropylene / PP (150 µm)",
+        presetKimdura: "Kimdura / Polypropylene thick (190 µm)",
+        
+        // Output / Results
+        setLabelPressTo: "Set Label Press To",
+        totalDieCopies: "Total Die Copies",
+        productionMeters: "production ({meters} m)",
+        totalWasteRevs: "{revs} waste ({meters} m)",
+        totalWasteLabels: "{labels} waste labels",
+        totalNoWaste: "0 waste (0 m)",
+        enterTotalLabels: "Enter <strong>Total Labels</strong> to calculate.",
+        sumDie: "Die: <strong>{across} across × {around} around = {labelsPerRev} labels/revolution</strong>",
+        sumCopies: "{total} labels ÷ {labelsPerRev} = <strong>{copiesRaw} copies</strong> of the die",
+        sumRounded: "Rounded to <strong>{actualRolls} rolls</strong> ({copiesAcross} copies across × {lanes} lanes) — <strong>{extraRolls} extra</strong>",
+        sumRoundedExact: "Rounded to <strong>{actualRolls} rolls</strong> ({copiesAcross} copies across × {lanes} lanes)",
+        sumProdCopies: "{revolutions} revolutions × {copiesAcross} copies = <strong>{prodCopies} production copies</strong>",
+        sumWasteAdd: " + <strong>{waste} waste</strong> = <strong>{totalCopies} total die copies</strong>",
+        sumWasteEquals: " = <strong>{totalCopies} total die copies</strong>",
+        sumTotalPrinted: "Total labels printed: <strong>{printed}</strong>",
+        sumRunPerRoll: "Run per roll: <strong>{runRollM} m</strong> — Production run: <strong>{totalRunM} m</strong>",
+        sumSetupWaste: "Setup waste: <strong>{setupM} m</strong> — Total run: <strong>{grandTotalM} m</strong>",
+        sumSplitCopies: "{total} ÷ {labelsPerRev} = <strong>{copiesRaw} copies</strong> of the die",
+        sumSplitRounded: "Rounded up: <strong>{rounded} total labels</strong> ({prodCopies} production copies)",
+        sumSplitWasteAdd: " + <strong>{waste} waste</strong> = <strong>{totalCopies} total die copies</strong>",
+        sumSplitInto1: "Split into: <strong>{rolls} rolls × {labels} labels</strong>",
+        sumSplitInto2: " + <strong>{rolls} rolls × {labels} labels</strong>",
+        sumSpliceFull: "splice to {rolls} full roll(s)",
+        sumSpliceWaste: " and {labels} waste labels",
+        sumSpliceSmall: "splice to 1 small roll of {labels}",
+        sumTotalRolls: "Total rolls: <strong>{rolls}</strong>",
+        sumSplitIntoEven: "Split into: <strong>{rolls} rolls × {labels} labels each</strong>",
+        sumProdRun: "Production run: <strong>{runM} m</strong>",
+        rcResultHead: "Labels per Roll",
+        rcResultCore: "Core Ø: <strong>{core} mm</strong> — Roll Ø: <strong>{rollOd} mm</strong>",
+        rcResultMat: "Label repeat: <strong>{repeat} mm</strong> — Material: <strong>{micron} µm ({mm} mm)</strong>",
+        rcResultArea: "Roll area: <strong>{area} mm²</strong> — Estimated roll length: <strong>{length} m</strong>"
+      },
+      no: {
+        // UI
+        title: "Etikett kalkulator",
+        navAmount: "Rull på Antall",
+        navSplit: "Skjøt / Splitt Rull",
+        navRollCalc: "Etiketter pr. Rull",
+        subtitle: "Beregn produksjonskjøring basert på stansekonfigurasjon",
+        dieConfig: "Stansekonfigurasjon",
+        reset: "↺ Nullstill",
+        step1: "1. Last Inn Stansearkiv",
+        selectFile: "(Velg Excel fil)",
+        enterDie: "Skriv Inn Stansenummer",
+        placeholderDie: "f.eks. 0001",
+        dieDetails: "Stansefakta",
+        zTooth: "Z-Tenner",
+        shape: "Form",
+        radius: "Radius",
+        comments: "Merknad",
+        dieNotFound: "Stanse ikke funnet.",
+        autoLoading: "Laster 260316_Stansearkiv.xlsx automatisk...",
+        aroundWarnGlobal: "⚠️ Mellomrom Rundt mangler i arkivet — standard satt til 3 mm. Juster hvis nødvendig.",
+        showDieConfig: "Vis Stansekonfigurasjon ↓",
+        hideDieConfig: "Skjul Stansekonfigurasjon ↑",
+        across: "Bredde",
+        acrossCount: "Antall",
+        acrossSize: "Størrelse",
+        acrossSpace: "Mellomrom",
+        acrossCC: "Senter-til-Senter",
+        acrossTotal: "Total Bredde",
+        around: "Rundt",
+        repeat: "Trekk / Repeat",
+        duplication: "Dobling (Duplication)",
+        aroundWarnLocal: "Mangler i arkivet — standard satt til <strong>3 mm</strong>.<br>Juster hvis nødvendig.",
+        repeatWarn: "Effektivt trekk er under maskinens minimum (148 mm),<br>vennligst øk doblingen (duplication)",
+        calculation: "Beregning",
+        aroundDup: "Rundt Dobling (Duplication)",
+        repeatDup: "Trekk × Dobling",
+        setupWasteMeters: "Oppstartsspill (meter)",
+        setupWasteLabels: "Oppstartsspill (etiketter)",
+        wasteMeter: "Oppstartsspill (Kassasjon) meter (valgfritt)",
+        diesLoaded: "Lastet {count} stanser vellykket.",
+        errExcelFormat: "Feil: Ugyldig Excel-filformat.",
+        errAutoLoad: "Automatisk innlasting krever en webserver. Vennligst velg filen manuelt.",
+        loading: "Laster...",
+        hideDieConfig: "Skjul Stansekonfigurasjon ↑",
+        showDieConfig: "Vis Stansekonfigurasjon ↓",
+        
+        // Amount Mode
+        totalLabels: "Totalt Antall Etiketter",
+        totalRolls: "Totalt Antall Ruller",
+        perRoll: "Etiketter pr. Rull",
+        rollLengthM: "Rullengde i (<span class=\"unit\">m</span>)",
+        rollLengthMFull: "Rullengde i (<span class=\"unit\">m</span>) — Full Kjøring",
+        rollLengthMFor: "Rullengde i (<span class=\"unit\">m</span>) for {labels} Etiketter",
+
+        // Split Mode
+        divider: "Deler / Split (valgfritt)",
+        exactPerRoll: "Nøyaktig Etikett pr. Rull (valgfritt)",
+        minSplice: "Min. Skjøt pr. Rull (valgfritt)",
+        minSpliceTitle: "Hvis maskinen må klippe kortere enn nøyaktig rullstørrelse",
+
+        // Roll Labels Calc
+        rcHowTo: "Slik fungerer det",
+        rcTip1: "Skriv inn <strong style=\"color:var(--text-primary);\">Kjerne Indre Diameter</strong> (mm) — pappen/plastens indre mål. Vanlig: 25 mm (1″), 38 mm (1.5″), 76 mm (3″).",
+        rcTip2: "Skriv inn <strong style=\"color:var(--text-primary);\">Rull Ytre Diameter</strong> (mm) — ytre mål av rullen inkludert materialet.",
+        rcTip3: "Skriv inn <strong style=\"color:var(--text-primary);\">Etikett Trekk (Repeat)</strong> (mm) — avstand fra topp til topp inkl. mellomrom.",
+        rcTip4: "Skriv inn <strong style=\"color:var(--text-primary);\">Tykkelse (Materiale)</strong> (µm) — kombinert tykkelse av etikett og bakpapir (liner).",
+        rcTip5: "Kalkulatoren viser <strong style=\"color:var(--text-primary);\">estimert antall etiketter</strong> samt estimert antall meter i rullen.",
+        coreId: "Kjerne Indre Diameter",
+        rollOd: "Rull Ytre Diameter",
+        labelRepeat: "Etikett Trekk (Repeat)",
+        matThickness: "Materialets Tykkelse",
+        presetThickness: "Standard Tykkelser",
+        presetSelect: "— velg standard for å fylle tykkelse —",
+        presetThermal: "Termo papir, direkte (90 µm)",
+        presetThermalTop: "Termo papir, top-coated (110 µm)",
+        presetThermalTrans: "Termo-transfer papir, premium (160 µm)",
+        presetPet: "Polyester / PET (100 µm)",
+        presetPp: "Polypropylen / PP (150 µm)",
+        presetKimdura: "Kimdura / Polypropylen tykk (190 µm)",
+        
+        // Output / Results
+        setLabelPressTo: "Sett Trykkmaskinen Til",
+        totalDieCopies: "Totale Stansekopier",
+        productionMeters: "produksjon ({meters} m)",
+        totalWasteRevs: "{revs} spill ({meters} m)",
+        totalWasteLabels: "{labels} spill etiketter",
+        totalNoWaste: "0 spill (0 m)",
+        enterTotalLabels: "Skriv inn <strong>Totalt Antall Etiketter</strong> for å beregne.",
+        sumDie: "Stanse: <strong>{across} bredde × {around} rundt = {labelsPerRev} etiketter/rotasjon</strong>",
+        sumCopies: "{total} etiketter ÷ {labelsPerRev} = <strong>{copiesRaw} kopier</strong> av stansen",
+        sumRounded: "Rundet av til <strong>{actualRolls} ruller</strong> ({copiesAcross} kopier i bredden × {lanes} baner) — <strong>{extraRolls} ekstra</strong>",
+        sumRoundedExact: "Rundet av til <strong>{actualRolls} ruller</strong> ({copiesAcross} kopier i bredden × {lanes} baner)",
+        sumProdCopies: "{revolutions} rotasjoner × {copiesAcross} kopier = <strong>{prodCopies} produksjonskopier</strong>",
+        sumWasteAdd: " + <strong>{waste} spill</strong> = <strong>{totalCopies} totale stansekopier</strong>",
+        sumWasteEquals: " = <strong>{totalCopies} totale stansekopier</strong>",
+        sumTotalPrinted: "Totalt trykte etiketter: <strong>{printed}</strong>",
+        sumRunPerRoll: "Rullengde: <strong>{runRollM} m</strong> — Produksjonslengde: <strong>{totalRunM} m</strong>",
+        sumSetupWaste: "Oppstartsspill: <strong>{setupM} m</strong> — Total kjøring: <strong>{grandTotalM} m</strong>",
+        sumSplitCopies: "{total} ÷ {labelsPerRev} = <strong>{copiesRaw} kopier</strong> av stansen",
+        sumSplitRounded: "Rundet opp: <strong>{rounded} etiketter totalt</strong> ({prodCopies} produksjonskopier)",
+        sumSplitWasteAdd: " + <strong>{waste} spill</strong> = <strong>{totalCopies} totale stansekopier</strong>",
+        sumSplitInto1: "Delt i: <strong>{rolls} ruller × {labels} etiketter</strong>",
+        sumSplitInto2: " + <strong>{rolls} ruller × {labels} etiketter</strong>",
+        sumSpliceFull: "skjøt til {rolls} full(e) rull(er)",
+        sumSpliceWaste: " og {labels} spill etiketter",
+        sumSpliceSmall: "skjøt til 1 del-rull på {labels}",
+        sumTotalRolls: "Totalt antall ruller: <strong>{rolls}</strong>",
+        sumSplitIntoEven: "Delt opp i: <strong>{rolls} ruller × {labels} etiketter hver</strong>",
+        sumProdRun: "Produksjonslengde: <strong>{runM} m</strong>",
+        rcResultHead: "Etiketter pr. Rull",
+        rcResultCore: "Kjerne Ø: <strong>{core} mm</strong> — Rull Ø: <strong>{rollOd} mm</strong>",
+        rcResultMat: "Etikett Trekk: <strong>{repeat} mm</strong> — Materiale: <strong>{micron} µm ({mm} mm)</strong>",
+        rcResultArea: "Rull areal: <strong>{area} mm²</strong> — Estimert rullengde: <strong>{length} m</strong>"
+      }
+    };
+
+    let currentLang = localStorage.getItem('labelCalcLang') || DEFAULT_LANG;
+
+    function t(key, vars = {}) {
+      let str = translations[currentLang][key] || translations['en'][key] || key;
+      for (const [k, v] of Object.entries(vars)) {
+        str = str.replace(`{${k}}`, v);
+      }
+      return str;
+    }
+
+    function applyTranslations() {
+      // Loop elements with data-i18n tags
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          // If input placeholder
+          if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+             el.setAttribute('placeholder', translations[currentLang][key]);
+          } else {
+             // We inject text, careful with innerHTML vs textContent if it contains tags
+             el.innerHTML = translations[currentLang][key];
+          }
+        }
+      });
+      
+      // Auto-translate numeric placeholders (e.g. -> f.eks.)
+      document.querySelectorAll('input[placeholder]').forEach(el => {
+        const p = el.getAttribute('placeholder');
+        if (!p) return;
+        if (currentLang === 'no') {
+          el.setAttribute('placeholder', p.replace(/^e\.g\./i, 'f.eks.'));
+        } else {
+          el.setAttribute('placeholder', p.replace(/^f\.eks\./i, 'e.g.'));
+        }
+      });
+      
+      document.documentElement.lang = currentLang;
+      // Re-trigger current calculation to update dynamic strings
+      if (typeof calculateCurrent === 'function') calculateCurrent();
+    }
+
 
     // ─── Die Auto-Calc ──────────────────────────────────────
     function updateDie() {
@@ -1188,12 +1463,12 @@
       if (total === 0) {
         $('res-productionCopies').textContent = '—';
         $('res-prodOnlyCopies').textContent = '';
-        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
+        $('summary-amount').innerHTML = t('enterTotalLabels');
         $('production-card').style.display = 'none';
         $('results-amount').classList.add('visible');
         $('results-split').classList.remove('visible');
         const dmLabel = document.querySelector('label[for="perRollDm"]');
-        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
+        if (dmLabel) dmLabel.innerHTML = t('rollLengthM');
         if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
         return;
       }
@@ -1210,15 +1485,15 @@
 
       const wasteStrParts = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrParts.push(`${fmt(wasteRevs)} waste (${fmt(dieReg)} m)`);
+        wasteStrParts.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
       }
-      const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : '0 waste (0 m)';
+      const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : t('totalNoWaste');
 
       let grandTotalM = splitRunM + dieReg;
 
       $('res-productionCopies').textContent = fmt(totalDieCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} production (${fmt(parseFloat(splitRunM.toFixed(2)))} m) + ${wasteStr})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', {meters: fmt(parseFloat(splitRunM.toFixed(2)))})} + ${wasteStr})`;
       $('production-card').style.display = 'block';
       $('results-amount').classList.add('visible');
       $('results-split').classList.remove('visible');
@@ -1238,22 +1513,22 @@
           if (document.activeElement !== $('totalRolls')) {
             $('totalRolls').value = across;
           }
-          if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>) — Full Run`;
+          if (dmLabel) dmLabel.innerHTML = t('rollLengthMFull');
           rollInfoHtml =
             `<br>Roll length: <strong>${fmt(parseFloat(runPerLaneM.toFixed(3)))} m</strong>` +
             ` — Total rolls: <strong>${across}</strong> (1 per lane)` +
             `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for a per-roll split.</em>`;
         } else {
-          if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
+          if (dmLabel) dmLabel.innerHTML = t('rollLengthM');
           if (document.activeElement !== $('perRollDm') && perRollDmSource === 'none') $('perRollDm').value = '';
           rollInfoHtml = `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for full roll breakdown.</em>`;
         }
 
         $('summary-amount').innerHTML =
-          `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
-          `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopiesRaw.toFixed(4)))} copies</strong> of the die<br>` +
-          `Rounded up: <strong>${fmt(fullRevs * labelsPerRev)} total labels</strong> (${fullRevs} production copies)` +
-          (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') +
+          t('sumDie', { across, around, labelsPerRev }) + `<br>` +
+          t('sumSplitCopies', { total: fmt(total), labelsPerRev, copiesRaw: fmt(parseFloat(dieCopiesRaw.toFixed(4))) }) + `<br>` +
+          t('sumSplitRounded', { rounded: fmt(fullRevs * labelsPerRev), prodCopies: fullRevs }) +
+          (wasteRevs > 0 ? t('sumWasteAdd', { waste: fmt(wasteRevs), totalCopies: fmt(totalDieCopies) }) : '') +
           rollInfoHtml;
         return;
       }
@@ -1261,7 +1536,7 @@
       // Full roll breakdown
       const perRoll = perRollRaw;
       const dmLabel = document.querySelector('label[for="perRollDm"]');
-      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>) for ${perRoll} Labels`;
+      if (dmLabel) dmLabel.innerHTML = t('rollLengthMFor', {labels: perRoll});
 
       const rollsNeeded = total / perRoll;
       const copiesAcross = Math.ceil(rollsNeeded / across);
@@ -1282,26 +1557,25 @@
 
       const wasteStrPartsFull = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrPartsFull.push(`${fmt(wasteRevs)} waste (${fmt(dieReg)} m)`);
+        wasteStrPartsFull.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
       }
-      const wasteStrFull = wasteStrPartsFull.length > 0 ? wasteStrPartsFull.join(' + ') : '0 waste (0 m)';
+      const wasteStrFull = wasteStrPartsFull.length > 0 ? wasteStrPartsFull.join(' + ') : t('totalNoWaste');
 
       $('res-productionCopies').textContent = fmt(totalCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} production (${fmt(parseFloat(totalRunM.toFixed(2)))} m) + ${wasteStrFull})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} ${t('productionMeters', {meters: fmt(parseFloat(totalRunM.toFixed(2)))})} + ${wasteStrFull})`;
 
       let amountSummary =
-        `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
-        `${fmt(total)} labels ÷ ${fmt(perRoll)} per roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
-        `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
-        (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
-        `${fmt(revolutions)} revolutions × ${fmt(copiesAcross)} copies = <strong>${fmt(prodCopies)} production copies</strong>` +
-        (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalCopies)} total die copies</strong>` : ` = <strong>${fmt(totalCopies)} total die copies</strong>`) + `<br>` +
-        `Total labels printed: <strong>${fmt(totalPrinted)}</strong><br>` +
-        `Run per roll: <strong>${fmt(parseFloat(runPerRollM.toFixed(2)))} m</strong> — Production run: <strong>${fmt(parseFloat(totalRunM.toFixed(2)))} m</strong>`;
+        t('sumDie', { across, around, labelsPerRev }) + `<br>` +
+        t('sumCopies', { total: fmt(total), labelsPerRev: fmt(perRoll), copiesRaw: fmt(rollsNeeded) }) + `<br>` +
+        (extraRolls > 0 ? t('sumRounded', { actualRolls: fmt(actualRolls), copiesAcross: fmt(copiesAcross), lanes: across, extraRolls: fmt(extraRolls) }) : t('sumRoundedExact', { actualRolls: fmt(actualRolls), copiesAcross: fmt(copiesAcross), lanes: across })) + `<br>` +
+        t('sumProdCopies', { revolutions: fmt(revolutions), copiesAcross: fmt(copiesAcross), prodCopies: fmt(prodCopies) }) +
+        (wasteRevs > 0 ? t('sumWasteAdd', { waste: fmt(wasteRevs), totalCopies: fmt(totalCopies) }) : t('sumWasteEquals', { totalCopies: fmt(totalCopies) })) + `<br>` +
+        t('sumTotalPrinted', { printed: fmt(totalPrinted) }) + `<br>` +
+        t('sumRunPerRoll', { runRollM: fmt(parseFloat(runPerRollM.toFixed(2))), totalRunM: fmt(parseFloat(totalRunM.toFixed(2))) });
 
       if (dieReg > 0) {
-        amountSummary += `<br>Setup waste: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+        amountSummary += `<br>` + t('sumSetupWaste', { setupM: fmt(dieReg), grandTotalM: fmt(parseFloat(grandTotalM.toFixed(2))) });
       }
 
       $('summary-amount').innerHTML = amountSummary;
@@ -1316,7 +1590,7 @@
         // Only clearing production card and summary, detailed tiles are removed
         $('res-productionCopies').textContent = '—';
         $('res-prodOnlyCopies').textContent = '';
-        $('summary-split').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
+        $('summary-split').innerHTML = t('enterTotalLabels');
         $('production-card').style.display = 'none';
         $('results-split').classList.add('visible');
         $('results-amount').classList.remove('visible');
@@ -1397,32 +1671,32 @@
 
       const wasteStrParts = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrParts.push(`${fmt(wasteRevs)} waste (${fmt(dieReg)} m)`);
+        wasteStrParts.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
       }
       if (spliceWasteLabels > 0) {
-        wasteStrParts.push(`${fmt(spliceWasteLabels)} waste labels`);
+        wasteStrParts.push(t('totalWasteLabels', {labels: fmt(spliceWasteLabels)}));
       }
-      const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : '0 waste (0 m)';
+      const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : t('totalNoWaste');
 
       // Detailed tiles are removed, so we skip populating them
 
       $('res-productionCopies').textContent = fmt(totalDieCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} production (${fmt(parseFloat(splitRunM.toFixed(2)))} m) + ${wasteStr})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', {meters: fmt(parseFloat(splitRunM.toFixed(2)))})} + ${wasteStr})`;
       $('production-card').style.display = 'block';
 
       // Build summary
       let summary =
-        `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
-        `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopiesRaw.toFixed(4)))} copies</strong> of the die<br>` +
-        `Rounded up: <strong>${fmt(rounded)} total labels</strong> (${fullRevs} production copies)` +
-        (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') + `<br>`;
+        t('sumDie', { across, around, labelsPerRev }) + `<br>` +
+        t('sumSplitCopies', { total: fmt(total), labelsPerRev, copiesRaw: fmt(parseFloat(dieCopiesRaw.toFixed(4))) }) + `<br>` +
+        t('sumSplitRounded', { rounded: fmt(rounded), prodCopies: fullRevs }) +
+        (wasteRevs > 0 ? t('sumWasteAdd', { waste: fmt(wasteRevs), totalCopies: fmt(totalDieCopies) }) : '') + `<br>`;
 
       if (rollsPerLane > 1) {
         const fullCount = (allSame ? rollsPerLane : (rollsPerLane - 1)) * across;
-        summary += `Split into: <strong>${fullCount} rolls × ${fmt(fullRollLabels)} labels</strong>`;
+        summary += t('sumSplitInto1', { rolls: fullCount, labels: fmt(fullRollLabels) });
         if (!allSame) {
-          summary += ` + <strong>${across} rolls × ${fmt(lastRollLabels)} labels</strong>`;
+          summary += t('sumSplitInto2', { rolls: across, labels: fmt(lastRollLabels) });
 
           const mergedTotal = across * lastRollLabels;
           const mergeTarget = (maxPerRoll > 0) ? (Math.max(1, Math.round(maxPerRoll / around)) * around) : fullRollLabels;
@@ -1430,23 +1704,23 @@
 
           let helpText = '';
           if (fullEquiv > 0) {
-            helpText = `splice to ${fullEquiv} full roll${fullEquiv > 1 ? 's' : ''}`;
-            if (spliceWasteLabels > 0) helpText += ` and ${fmt(spliceWasteLabels)} waste labels`;
+            helpText = t('sumSpliceFull', { rolls: fullEquiv });
+            if (spliceWasteLabels > 0) helpText += t('sumSpliceWaste', { labels: fmt(spliceWasteLabels) });
           } else {
-            helpText = `splice to 1 small roll of ${fmt(mergedTotal)}`;
+            helpText = t('sumSpliceSmall', { labels: fmt(mergedTotal) });
           }
           summary += ` <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">(${helpText})</span>`;
           totalRolls = fullCount + across;
         }
-        summary += `<br>Total rolls: <strong>${fmt(totalRolls)}</strong><br>`;
+        summary += `<br>` + t('sumTotalRolls', { rolls: fmt(totalRolls) }) + `<br>`;
       } else {
-        summary += `Split into: <strong>${across} rolls × ${fmt(fullRollLabels)} labels each</strong><br>`;
+        summary += t('sumSplitIntoEven', { rolls: across, labels: fmt(fullRollLabels) }) + `<br>`;
       }
 
-      summary += `Production run: <strong>${fmt(parseFloat(splitRunM.toFixed(2)))} m</strong>`;
+      summary += t('sumProdRun', { runM: fmt(parseFloat(splitRunM.toFixed(2))) });
 
       if (dieReg > 0) {
-        summary += `<br>Setup waste: <strong>${fmt(dieReg)} m</strong> — Total run: <strong>${fmt(parseFloat(grandTotalM.toFixed(2)))} m</strong>`;
+        summary += `<br>` + t('sumSetupWaste', { setupM: fmt(dieReg), grandTotalM: fmt(parseFloat(grandTotalM.toFixed(2))) });
       }
 
       $('summary-split').innerHTML = summary;
@@ -1493,11 +1767,9 @@
         `≈ ${fmt(parseFloat(rollLengthM.toFixed(1)))} m of media`;
 
       $('rc-result-summary').innerHTML =
-        `Core Ø: <strong>${fmt(coreId)} mm</strong> — Roll Ø: <strong>${fmt(rollOd)} mm</strong><br>` +
-        `Label repeat: <strong>${fmt(repeat)} mm</strong> — Material: <strong>${fmt(thicknessMicron)} µm` +
-        ` (${fmt(parseFloat(thicknessMm.toFixed(4)))} mm)</strong><br>` +
-        `Roll area: <strong>${fmt(Math.round(rollAreaMm2))} mm²</strong> — ` +
-        `Estimated roll length: <strong>${fmt(parseFloat(rollLengthM.toFixed(2)))} m</strong>`;
+        t('rcResultCore', { core: fmt(coreId), rollOd: fmt(rollOd) }) + `<br>` +
+        t('rcResultMat', { repeat: fmt(repeat), micron: fmt(thicknessMicron), mm: fmt(parseFloat(thicknessMm.toFixed(4))) }) + `<br>` +
+        t('rcResultArea', { area: fmt(Math.round(rollAreaMm2)), length: fmt(parseFloat(rollLengthM.toFixed(2))) });
     }
 
     // Wire rollcalc inputs to live calculation
@@ -1623,7 +1895,7 @@
           return row; // Keep old English structure if ID isn't present
         });
 
-        $('dieStatus').textContent = `Loaded ${dieDatabase.length} dies successfully.`;
+        $('dieStatus').textContent = t('diesLoaded', { count: dieDatabase.length });
         $('dieStatus').style.color = 'var(--success)';
         $('searchDie').disabled = false;
         $('searchDie').focus();
@@ -1632,12 +1904,12 @@
         $('toggleManualDie').style.display = 'block';
         $('manualDieConfig').style.display = 'none';
       } catch (err) {
-        showManualUpload('Error: Invalid Excel file format.');
+        showManualUpload(t('errExcelFormat'));
       }
     }
 
     function showManualUpload(msg) {
-      $('dieStatus').textContent = msg || 'Auto-load requires a web server. Please select the file manually.';
+      $('dieStatus').textContent = msg || t('errAutoLoad');
       $('dieStatus').style.color = 'var(--warning)';
       $('manualUploadGroup').style.display = 'block';
       $('searchLabelPrefix').textContent = '2. ';
@@ -1659,7 +1931,7 @@
       const file = e.target.files[0];
       if (!file) return;
 
-      $('dieStatus').textContent = 'Loading...';
+      $('dieStatus').textContent = t('loading');
       $('dieStatus').style.color = 'var(--text-muted)';
 
       const reader = new FileReader();
@@ -1673,11 +1945,11 @@
       const config = $('manualDieConfig');
       if (config.style.display === 'none') {
         config.style.display = 'block';
-        this.textContent = 'Hide Die Configuration ↑';
+        this.textContent = t('hideDieConfig');
         this.style.background = 'rgba(255,255,255,0.1)';
       } else {
         config.style.display = 'none';
-        this.textContent = 'Show Die Configuration ↓';
+        this.textContent = t('showDieConfig');
         this.style.background = 'rgba(255,255,255,0.05)';
       }
     });
@@ -1772,6 +2044,23 @@
       } else {
         $('dieNotFound').style.display = 'block';
       }
+    });
+
+    // ─── Initialize Translation System ────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      if (currentLang === 'no') {
+        $('langToggle').textContent = '🌐 NO';
+        $('langToggle').style.color = 'var(--text-primary)';
+      }
+      
+      applyTranslations();
+
+      $('langToggle').addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'no' : 'en';
+        localStorage.setItem('labelCalcLang', currentLang);
+        $('langToggle').textContent = currentLang === 'en' ? '🌐 EN' : '🌐 NO';
+        applyTranslations();
+      });
     });
 
   </script>
