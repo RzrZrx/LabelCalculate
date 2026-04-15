@@ -770,8 +770,8 @@
           <input type="number" id="perRoll" placeholder="e.g. 500" min="1">
         </div>
         <div class="input-group">
-          <label for="perRollDm">Roll Length (<span class="unit">dm</span>)</label>
-          <input type="number" id="perRollDm" placeholder="e.g. 50" min="0" step="0.1">
+          <label for="perRollDm">Roll Length (<span class="unit">m</span>)</label>
+          <input type="number" id="perRollDm" placeholder="e.g. 5" min="0" step="0.001">
         </div>
       </div>
 
@@ -979,13 +979,13 @@
     });
 
     $('perRollDm').addEventListener('input', () => {
-      const dmRaw = parseFloat($('perRollDm').value);
-      if (!isNaN(dmRaw) && dmRaw > 0) {
+      const mRaw = parseFloat($('perRollDm').value);
+      if (!isNaN(mRaw) && mRaw > 0) {
         const dup = parseInt(aroundDup.value) || 1;
         const around = (parseInt(aroundCount.value) || 1) * dup;
         const repeat = parseFloat(aroundRepeatDup.value) || 0;
         if (around > 0 && repeat > 0) {
-          $('perRoll').value = Math.round((dmRaw * 100 / repeat) * around);
+          $('perRoll').value = Math.round((mRaw * 1000 / repeat) * around);
         }
       } else {
         $('perRoll').value = '';
@@ -1056,7 +1056,7 @@
         $('results-amount').classList.add('visible');
         $('results-split').classList.remove('visible');
         const dmLabel = document.querySelector('label[for="perRollDm"]');
-        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
         if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
         return;
       }
@@ -1079,7 +1079,7 @@
       // ── Roll breakdown (only runs when Labels per Roll is also set) ──
       if (!hasPerRoll) {
         const dmLabel = document.querySelector('label[for="perRollDm"]');
-        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
         if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
 
         $('summary-amount').innerHTML =
@@ -1094,7 +1094,7 @@
       // Full roll breakdown
       const perRoll = perRollRaw;
       const dmLabel = document.querySelector('label[for="perRollDm"]');
-      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>) for ${perRoll} Labels`;
+      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>) for ${perRoll} Labels`;
 
       const rollsNeeded = total / perRoll;
       const copiesAcross = Math.ceil(rollsNeeded / across);
@@ -1106,7 +1106,7 @@
 
       const runPerRollM = (revolutions * repeatLen) / 1000;
       if (document.activeElement !== $('perRollDm')) {
-        $('perRollDm').value = parseFloat((runPerRollM * 10).toFixed(2));
+        $('perRollDm').value = parseFloat(runPerRollM.toFixed(3));
       }
       const totalRunM = runPerRollM * copiesAcross;
       const grandTotalM = totalRunM + dieReg;
@@ -1275,7 +1275,7 @@
 
       // Reset dm label back to plain text
       const dmLabel = document.querySelector('label[for="perRollDm"]');
-      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+      if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
 
       // Hide results and production card
       $('production-card').style.display = 'none';
