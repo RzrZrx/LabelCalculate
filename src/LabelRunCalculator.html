@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Label Run Calculator</title>
+  <title>Label Calculator</title>
   <meta name="description"
     content="Calculate label printing runs from die configuration. Supports roll-by-amount and split-roll modes.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -605,18 +605,27 @@
 
   <div class="app">
     <!-- Header -->
-    <header class="header" style="position: relative;">
+    <header class="header">
       <div class="header__icon">🏷️</div>
-      <h1>Label Run Calculator</h1>
-      <p>Calculate label production runs from die configuration</p>
-      <button id="btnReset" class="btn-reset" type="button" style="position: absolute; top: 0; right: 0;" title="Clear all inputs and results">
-        ↺ Reset
-      </button>
+      <h1>Label Calculator</h1>
     </header>
+
+    <!-- Mode Tabs (top-level navigation) -->
+    <div class="tabs" style="margin-bottom:0.75rem;">
+      <button class="tab active" id="tab-amount" data-mode="amount">Complete Rolls</button>
+      <button class="tab" id="tab-split" data-mode="split">Split Roll</button>
+      <button class="tab" id="tab-rollcalc" data-mode="rollcalc">Labels per Roll</button>
+    </div>
+    <p id="die-subtitle" style="font-size:0.82rem; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.5;">Calculate label production runs from die configuration</p>
 
     <!-- Die Configuration -->
     <section class="card" id="die-card">
-      <div class="card__title"><span>⚙️</span> Die Configuration</div>
+      <div class="card__title" style="display:flex; align-items:center; justify-content:space-between;">
+        <span><span>⚙️</span> Die Configuration</span>
+        <button id="btnReset" class="btn-reset" type="button" title="Clear all inputs and results" style="font-size:0.78rem; padding:0.3rem 0.75rem;">
+          ↺ Reset
+        </button>
+      </div>
       <div class="die-section">
         
         <div class="input-group full" style="margin-bottom: 1.5rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
@@ -655,7 +664,10 @@
             </div>
           </div>
           <div id="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">Die not found.</div>
-          <div id="dieStatus" style="font-size: 0.75rem; margin-top: 0.35rem; color: var(--text-muted);">Auto-loading 260316_Stansearkiv.xlsx...</div>
+          <div style="margin-top: 0.35rem;">
+            <span id="dieStatus" style="font-size: 0.75rem; color: var(--text-muted);">Auto-loading 260316_Stansearkiv.xlsx...</span>
+            <span id="globalAroundSpaceWarning" style="font-size: 0.75rem; color: var(--warning); margin-left: 0.5rem; display: none;">⚠️ Around space Not in die record — defaulted to 3 mm. Adjust if known.</span>
+          </div>
           
           <button id="toggleManualDie" type="button" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; width: 100%; transition: all var(--transition);">Show Die Configuration ↓</button>
         </div>
@@ -705,6 +717,9 @@
           <div class="input-group">
             <label for="aroundSpace">Space (<span class="unit">mm</span>)</label>
             <input type="number" id="aroundSpace" placeholder="e.g. 3" min="0" step="0.001">
+            <div id="aroundSpaceWarning" style="display:none; margin-top:0.35rem; font-size:0.73rem; color:var(--warning); line-height:1.4;">
+              ⚠️ Not in die record — defaulted to <strong>3 mm</strong>. Adjust if known.
+            </div>
           </div>
         </div>
         <!-- Around C/C -->
@@ -750,10 +765,6 @@
       </div>
       <div class="repeat-warning" id="repeatWarning">⚠️ Effective repeat is below 148 mm converter minimum</div>
 
-      <div class="tabs">
-        <button class="tab active" id="tab-amount" data-mode="amount">Roll by Amount</button>
-        <button class="tab" id="tab-split" data-mode="split">Split Roll</button>
-      </div>
 
       <!-- Roll by Amount Inputs -->
       <div class="calc-inputs" id="inputs-amount">
@@ -816,7 +827,68 @@
       </div>
     </section>
 
-    <footer class="footer">Label Run Calculator &middot; Die-based production planning<br>By Roger Jemterud &middot; <a
+    <!-- Labels per Roll Calculator (standalone card) -->
+    <section class="card" id="rollcalc-card" style="display:none;">
+      <div class="card__title"><span>🧮</span> Labels per Roll Calculator</div>
+      <div id="inputs-rollcalc">
+        <div style="margin-bottom:1.25rem; padding:1rem 1.25rem; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-left:3px solid var(--accent); border-radius:var(--radius-sm); font-size:0.82rem; color:var(--text-secondary); line-height:1.75;">
+          <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent); margin-bottom:0.6rem;">How to use</div>
+          <ol style="margin:0; padding-left:1.25rem;">
+            <li>Enter the <strong style="color:var(--text-primary);">Core Inner Diameter</strong> (mm) — the inner bore of the cardboard or plastic core the labels are wound on. Common sizes: 25 mm (1″), 38 mm (1.5″), 76 mm (3″).</li>
+            <li>Enter the <strong style="color:var(--text-primary);">Roll Outer Diameter</strong> (mm) — the full diameter of the wound roll including all the label material.</li>
+            <li>Enter the <strong style="color:var(--text-primary);">Label Repeat</strong> (mm) — the distance from the top of one label to the top of the next, including the gap between labels.</li>
+            <li>Enter the <strong style="color:var(--text-primary);">Material Thickness</strong> (µm) — the combined thickness of the label face stock <em>plus</em> the liner. Use the preset dropdown for common label materials, or enter your own value.</li>
+            <li>The calculator will instantly show the <strong style="color:var(--text-primary);">approximate number of labels per roll</strong> along with the estimated roll length in metres.</li>
+          </ol>
+        </div>
+        <div class="calc-inputs">
+          <div class="input-group">
+            <label for="rc-coreId">Core Inner Diameter (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-coreId" placeholder="e.g. 76" min="0" step="0.1">
+          </div>
+          <div class="input-group">
+            <label for="rc-rollOd">Roll Outer Diameter (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-rollOd" placeholder="e.g. 200" min="0" step="0.1">
+          </div>
+          <div class="input-group">
+            <label for="rc-repeat">Label Repeat (<span class="unit">mm</span>)</label>
+            <input type="number" id="rc-repeat" placeholder="e.g. 50" min="0" step="0.01">
+          </div>
+          <div class="input-group">
+            <label for="rc-thickness">Material Thickness (<span class="unit">µm</span>)</label>
+            <input type="number" id="rc-thickness" placeholder="e.g. 160" min="1" step="1">
+          </div>
+          <div class="input-group full">
+            <label for="rc-preset">Preset Thicknesses</label>
+            <select id="rc-preset" style="background:#f1f5f9; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 0.75rem; color:#1e293b; font-family:inherit; font-size:0.9rem; width:100%; cursor:pointer; outline:none;">
+              <option value="" style="color:#1e293b;">— select a preset to fill thickness —</option>
+              <option value="90" style="color:#1e293b;">Thermal paper, direct (90 µm)</option>
+              <option value="110" style="color:#1e293b;">Thermal paper, top-coated (110 µm)</option>
+              <option value="130" style="color:#1e293b;">Thermal transfer paper (130 µm)</option>
+              <option value="160" style="color:#1e293b;">Thermal transfer paper, premium (160 µm)</option>
+              <option value="100" style="color:#1e293b;">Polyester / PET (100 µm)</option>
+              <option value="150" style="color:#1e293b;">Polypropylene / PP (150 µm)</option>
+              <option value="190" style="color:#1e293b;">Kimdura / Polypropylene thick (190 µm)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Roll Capacity Result -->
+        <div id="rollcalc-result" style="display:none; margin-top:0.5rem;">
+          <div class="card" style="text-align:center; padding:1.5rem; border:2px solid var(--success); background:rgba(52,211,153,0.05); margin-bottom:0;">
+            <div style="color:var(--success); font-size:0.9rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">Labels per Roll</div>
+            <div id="rc-result-value" style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
+            <div id="rc-result-sub" style="color:var(--text-secondary); font-size:0.85rem; margin-top:0.5rem;"></div>
+          </div>
+          <div class="summary-box" id="rc-result-summary" style="margin-top:1rem;"></div>
+        </div>
+        <div id="rollcalc-hint" style="color:var(--text-muted); font-size:0.8rem; margin-top:0.75rem;">
+          Fill in all four fields to see the result.
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">Label Calculator &middot; Die-based production planning<br>By Roger Jemterud &middot; <a
         href="https://github.com/RzrZrx/LabelCalculate" target="_blank" rel="noopener"
         style="color:var(--accent);text-decoration:none;">github.com/RzrZrx/LabelCalculate</a></footer>
   </div>
@@ -940,6 +1012,7 @@
 
     // ─── Two-Way Total Labels / Rolls ───────────────────────
     let lastLabelsEdit = 'labels'; // 'labels' or 'rolls'
+    let perRollDmSource = 'none'; // 'none' | 'user' | 'calc'
 
     function syncLabelsAndRolls() {
       const labels = parseInt($('totalLabels').value);
@@ -953,10 +1026,9 @@
           $('totalLabels').value = rolls * perRoll;
         }
       } else {
-        // If we don't know labels per roll, we can't link them. Clear the counterpart.
-        if (lastLabelsEdit === 'labels') {
-          $('totalRolls').value = '';
-        } else if (lastLabelsEdit === 'rolls') {
+        // If we don't know labels per roll, we can't link them.
+        // Don't clear totalRolls here — calcByAmount will auto-fill it (1 per lane).
+        if (lastLabelsEdit === 'rolls') {
           $('totalLabels').value = '';
         }
       }
@@ -979,6 +1051,7 @@
     });
 
     $('perRollDm').addEventListener('input', () => {
+      perRollDmSource = 'user';
       const mRaw = parseFloat($('perRollDm').value);
       if (!isNaN(mRaw) && mRaw > 0) {
         const dup = parseInt(aroundDup.value) || 1;
@@ -1013,7 +1086,14 @@
         $('production-card').style.display = 'none';
         $('results-amount').classList.remove('visible');
         $('results-split').classList.remove('visible');
-        calculateCurrent();
+        // Show/hide die-card and calc-card for rollcalc mode
+        const isRollCalc = currentMode === 'rollcalc';
+        $('die-card').style.display      = isRollCalc ? 'none' : '';
+        $('calc-card').style.display     = isRollCalc ? 'none' : '';
+        $('rollcalc-card').style.display = isRollCalc ? '' : 'none';
+        $('die-subtitle').style.display  = isRollCalc ? 'none' : '';
+        if (!isRollCalc) calculateCurrent();
+        else calcRollCapacity();
       });
     });
 
@@ -1024,6 +1104,7 @@
 
     // ─── Calculate ──────────────────────────────────────────
     function calculateCurrent() {
+      if (currentMode === 'rollcalc') { calcRollCapacity(); return; }
       const across = parseInt(acrossCount.value) || 1;
       const dup = parseInt(aroundDup.value) || 1;
       const around = (parseInt(aroundCount.value) || 1) * dup;
@@ -1079,15 +1160,35 @@
       // ── Roll breakdown (only runs when Labels per Roll is also set) ──
       if (!hasPerRoll) {
         const dmLabel = document.querySelector('label[for="perRollDm"]');
-        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
-        if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
+        let rollInfoHtml;
+
+        if (repeatLen > 0 && perRollDmSource !== 'user') {
+          // Auto-populate: one roll per lane = across total rolls
+          const runPerLaneM = (fullRevs * repeatLen) / 1000;
+          if (document.activeElement !== $('perRollDm')) {
+            $('perRollDm').value = parseFloat(runPerLaneM.toFixed(3));
+            perRollDmSource = 'calc';
+          }
+          if (document.activeElement !== $('totalRolls')) {
+            $('totalRolls').value = across;
+          }
+          if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>) — Full Run`;
+          rollInfoHtml =
+            `<br>Roll length: <strong>${fmt(parseFloat(runPerLaneM.toFixed(3)))} m</strong>` +
+            ` — Total rolls: <strong>${across}</strong> (1 per lane)` +
+            `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for a per-roll split.</em>`;
+        } else {
+          if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">m</span>)`;
+          if (document.activeElement !== $('perRollDm') && perRollDmSource === 'none') $('perRollDm').value = '';
+          rollInfoHtml = `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for full roll breakdown.</em>`;
+        }
 
         $('summary-amount').innerHTML =
           `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
           `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopiesRaw.toFixed(4)))} copies</strong> of the die<br>` +
           `Rounded up: <strong>${fmt(fullRevs * labelsPerRev)} total labels</strong> (${fullRevs} production copies)` +
           (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') +
-          `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for full roll breakdown.</em>`;
+          rollInfoHtml;
         return;
       }
 
@@ -1107,6 +1208,7 @@
       const runPerRollM = (revolutions * repeatLen) / 1000;
       if (document.activeElement !== $('perRollDm')) {
         $('perRollDm').value = parseFloat(runPerRollM.toFixed(3));
+        perRollDmSource = 'calc';
       }
       const totalRunM = runPerRollM * copiesAcross;
       const grandTotalM = totalRunM + dieReg;
@@ -1231,7 +1333,63 @@
       $('results-amount').classList.remove('visible');
     }
 
-    // Auto-calculate on Enter key and auto-select text on focus
+    // ─── Labels per Roll Calculator ─────────────────────────────
+    // Formula: π/4 × (OD² - CoreID²) / (repeat × thickness_mm)
+    // Inputs: OD, CoreID, repeat in mm; thickness in µm (converted ÷ 1000 to mm)
+    function calcRollCapacity() {
+      const coreId    = parseFloat($('rc-coreId').value);
+      const rollOd    = parseFloat($('rc-rollOd').value);
+      const repeat    = parseFloat($('rc-repeat').value);
+      const thicknessMicron = parseFloat($('rc-thickness').value);
+
+      const allFilled = [coreId, rollOd, repeat, thicknessMicron].every(v => !isNaN(v) && v > 0);
+
+      $('rollcalc-result').style.display = allFilled ? '' : 'none';
+      $('rollcalc-hint').style.display   = allFilled ? 'none' : '';
+
+      if (!allFilled) return;
+
+      const thicknessMm = thicknessMicron / 1000;
+      const labelsRaw = (Math.PI / 4) * (rollOd * rollOd - coreId * coreId) / (repeat * thicknessMm);
+      const labels = Math.round(labelsRaw);
+
+      if (labels <= 0 || !isFinite(labels)) {
+        $('rc-result-value').textContent = '—';
+        $('rc-result-sub').textContent = 'Check inputs — OD must be larger than Core ID';
+        $('rc-result-summary').innerHTML = '';
+        return;
+      }
+
+      $('rc-result-value').textContent = fmt(labels);
+
+      // Roll area stats
+      const rollAreaMm2 = (Math.PI / 4) * (rollOd * rollOd - coreId * coreId);
+      const totalWindings = Math.round(rollAreaMm2 / (Math.PI * (rollOd + coreId) / 2 * thicknessMm)); // approx
+      const rollLengthM = (labels * repeat) / 1000;
+
+      $('rc-result-sub').textContent =
+        `≈ ${fmt(parseFloat(rollLengthM.toFixed(1)))} m of media`;
+
+      $('rc-result-summary').innerHTML =
+        `Core Ø: <strong>${fmt(coreId)} mm</strong> — Roll Ø: <strong>${fmt(rollOd)} mm</strong><br>` +
+        `Label repeat: <strong>${fmt(repeat)} mm</strong> — Material: <strong>${fmt(thicknessMicron)} µm` +
+          ` (${fmt(parseFloat(thicknessMm.toFixed(4)))} mm)</strong><br>` +
+        `Roll area: <strong>${fmt(Math.round(rollAreaMm2))} mm²</strong> — ` +
+        `Estimated roll length: <strong>${fmt(parseFloat(rollLengthM.toFixed(2)))} m</strong>`;
+    }
+
+    // Wire rollcalc inputs to live calculation
+    ['rc-coreId', 'rc-rollOd', 'rc-repeat', 'rc-thickness'].forEach(id =>
+      $(id).addEventListener('input', calcRollCapacity)
+    );
+    $('rc-preset').addEventListener('change', function() {
+      if (this.value) {
+        $('rc-thickness').value = this.value;
+        calcRollCapacity();
+      }
+    });
+
+
     document.querySelectorAll('#calc-card input:not(#dieFile):not(#searchDie)').forEach(input => {
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') $('btnCalc').click();
@@ -1252,6 +1410,11 @@
       ['acrossCount','acrossSize','acrossSpace',
        'aroundCount','aroundSize','aroundSpace'].forEach(id => $(id).value = '');
 
+      // Clear Around Space warning
+      $('aroundSpaceWarning').style.display = 'none';
+      $('globalAroundSpaceWarning').style.display = 'none';
+      $('aroundSpace').style.borderColor = '';
+
       // Reset duplication to 1
       $('aroundDup').value = '1';
 
@@ -1267,6 +1430,7 @@
       $('totalRolls').value = '';
       $('perRoll').value = '';
       $('perRollDm').value = '';
+      perRollDmSource = 'none';
 
       // Clear Split Roll inputs
       $('totalLabelsSplit').value = '';
@@ -1288,6 +1452,16 @@
 
       // Hide repeat warning
       $('repeatWarning').classList.remove('visible');
+
+      // Clear Labels per Roll calculator
+      ['rc-coreId', 'rc-rollOd', 'rc-repeat', 'rc-thickness'].forEach(id => $(id).value = '');
+      $('rc-preset').value = '';
+      $('rollcalc-card').style.display = 'none';
+      $('rollcalc-result').style.display = 'none';
+      $('rollcalc-hint').style.display = '';
+      $('rc-result-value').textContent = '—';
+      $('rc-result-sub').textContent = '';
+      $('rc-result-summary').innerHTML = '';
 
       // Re-run to clear computed values cleanly
       updateAll();
@@ -1388,6 +1562,7 @@
       const val = e.target.value.trim().toLowerCase();
       $('dieNotFound').style.display = 'none';
       $('dieFeedback').style.display = 'none';
+      $('globalAroundSpaceWarning').style.display = 'none';
       if (!val) return;
 
       // Find die (allow pad start matching like "0001" vs "1")
@@ -1404,7 +1579,23 @@
         
         if (die.Around !== undefined) $('aroundCount').value = die.Around;
         if (die.Around_size !== undefined) $('aroundSize').value = die.Around_size;
-        if (die.Around_space !== undefined) $('aroundSpace').value = die.Around_space;
+
+        // Around space — apply 3 mm default and warn user if missing from die record
+        const hasAroundSpace = die.Around_space !== undefined &&
+                               die.Around_space !== null &&
+                               die.Around_space !== '' &&
+                               Number(die.Around_space) > 0;
+        if (hasAroundSpace) {
+          $('aroundSpace').value = die.Around_space;
+          $('aroundSpaceWarning').style.display = 'none';
+          $('globalAroundSpaceWarning').style.display = 'none';
+          $('aroundSpace').style.borderColor = '';
+        } else {
+          $('aroundSpace').value = 3;
+          $('aroundSpaceWarning').style.display = 'block';
+          $('globalAroundSpaceWarning').style.display = 'inline';
+          $('aroundSpace').style.borderColor = 'var(--warning)';
+        }
         
         // Update Information Card
         if (die.Across_size !== undefined && die.Around_size !== undefined) {
