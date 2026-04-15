@@ -717,8 +717,9 @@
           <div class="input-group">
             <label for="aroundSpace">Space (<span class="unit">mm</span>)</label>
             <input type="number" id="aroundSpace" placeholder="e.g. 3" min="0" step="0.001">
-            <div id="aroundSpaceWarning" style="display:none; margin-top:0.35rem; font-size:0.73rem; color:var(--warning); line-height:1.4;">
-              ⚠️ Not in die record — defaulted to <strong>3 mm</strong>. Adjust if known.
+            <div id="aroundSpaceWarning" style="display:none; margin-top:0.35rem; font-size:0.73rem; color:var(--warning); align-items:center; gap:0.4rem;">
+              <span style="font-size:1.25rem;">⚠️</span>
+              <div style="line-height:1.4;">Not in die record — defaulted to <strong>3 mm</strong>.<br>Adjust if known.</div>
             </div>
           </div>
         </div>
@@ -747,6 +748,10 @@
         <div class="input-group">
           <label for="aroundDup">Around Duplication</label>
           <input type="number" id="aroundDup" placeholder="1" min="1" step="1" value="1">
+          <div class="repeat-warning" id="repeatWarning">
+            <span style="font-size:1.25rem;">⚠️</span>
+            <div style="line-height:1.4;">Effective repeat is below 148 mm converter minimum,<br>please increase the duplication</div>
+          </div>
         </div>
         <div class="input-group">
           <label for="aroundRepeatDup">Repeat × Duplication (<span class="unit">mm</span>)</label>
@@ -763,7 +768,7 @@
           <input type="number" id="wasteLabels" placeholder="e.g. 500" min="0" step="1">
         </div>
       </div>
-      <div class="repeat-warning" id="repeatWarning">⚠️ Effective repeat is below 148 mm converter minimum</div>
+
 
 
       <!-- Roll by Amount Inputs -->
@@ -860,15 +865,15 @@
           </div>
           <div class="input-group full">
             <label for="rc-preset">Preset Thicknesses</label>
-            <select id="rc-preset" style="background:#f1f5f9; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 0.75rem; color:#1e293b; font-family:inherit; font-size:0.9rem; width:100%; cursor:pointer; outline:none;">
-              <option value="" style="color:#1e293b;">— select a preset to fill thickness —</option>
-              <option value="90" style="color:#1e293b;">Thermal paper, direct (90 µm)</option>
-              <option value="110" style="color:#1e293b;">Thermal paper, top-coated (110 µm)</option>
-              <option value="130" style="color:#1e293b;">Thermal transfer paper (130 µm)</option>
-              <option value="160" style="color:#1e293b;">Thermal transfer paper, premium (160 µm)</option>
-              <option value="100" style="color:#1e293b;">Polyester / PET (100 µm)</option>
-              <option value="150" style="color:#1e293b;">Polypropylene / PP (150 µm)</option>
-              <option value="190" style="color:#1e293b;">Kimdura / Polypropylene thick (190 µm)</option>
+            <select id="rc-preset" style="color-scheme:dark; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 0.75rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; width:100%; cursor:pointer; outline:none;">
+              <option value="">— select a preset to fill thickness —</option>
+              <option value="90">Thermal paper, direct (90 µm)</option>
+              <option value="110">Thermal paper, top-coated (110 µm)</option>
+              <option value="130">Thermal transfer paper (130 µm)</option>
+              <option value="160">Thermal transfer paper, premium (160 µm)</option>
+              <option value="100">Polyester / PET (100 µm)</option>
+              <option value="150">Polypropylene / PP (150 µm)</option>
+              <option value="190">Kimdura / Polypropylene thick (190 µm)</option>
             </select>
           </div>
         </div>
@@ -1592,7 +1597,7 @@
           $('aroundSpace').style.borderColor = '';
         } else {
           $('aroundSpace').value = 3;
-          $('aroundSpaceWarning').style.display = 'block';
+          $('aroundSpaceWarning').style.display = 'flex';
           $('globalAroundSpaceWarning').style.display = 'inline';
           $('aroundSpace').style.borderColor = 'var(--warning)';
         }
