@@ -615,7 +615,9 @@
     <header class="header" style="position:relative; padding-top:1rem;">
       <div class="header__icon">🏷️</div>
       <h1 data-i18n="title" style="margin:0;">Label Calculator</h1>
-      <button id="langToggle" style="position:absolute; right:0; top:1.5rem; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-primary); padding:0.4rem 0.8rem; font-size:0.8rem; cursor:pointer;" title="Switch Language">🌐 EN</button>
+      <button id="langToggle"
+        style="position:absolute; right:0; top:1.5rem; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-primary); padding:0.4rem 0.8rem; font-size:0.8rem; cursor:pointer;"
+        title="Switch Language">🌐 EN</button>
     </header>
 
     <!-- Mode Tabs (top-level navigation) -->
@@ -624,7 +626,8 @@
       <button class="tab" id="tab-split" data-mode="split" data-i18n="navSplit">Split Roll</button>
       <button class="tab" id="tab-rollcalc" data-mode="rollcalc" data-i18n="navRollCalc">Labels per Roll</button>
     </div>
-    <p id="die-subtitle" data-i18n="subtitle" style="font-size:0.82rem; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.5;">
+    <p id="die-subtitle" data-i18n="subtitle"
+      style="font-size:0.82rem; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.5;">
       Calculate label production runs from die configuration</p>
 
     <!-- Die Configuration -->
@@ -641,14 +644,17 @@
         <div class="input-group full"
           style="margin-bottom: 1.5rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
           <div id="manualUploadGroup" style="display: none;">
-            <label for="dieFile" style="margin-bottom: 0.3rem;"><span data-i18n="step1">1. Load Die Database</span> <span class="unit" data-i18n="selectFile">(Select Excel File)</span></label>
+            <label for="dieFile" style="margin-bottom: 0.3rem;"><span data-i18n="step1">1. Load Die Database</span>
+              <span class="unit" data-i18n="selectFile">(Select Excel File)</span></label>
             <input type="file" id="dieFile" accept=".xlsx, .xls"
               style="padding: 0.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.05); margin-bottom: 1rem; border: none; cursor: pointer;">
           </div>
 
-          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span><span data-i18n="enterDie">Enter Die Number</span></label>
+          <label for="searchDie" style="margin-bottom: 0.3rem;"><span id="searchLabelPrefix"></span><span
+              data-i18n="enterDie">Enter Die Number</span></label>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <input type="text" id="searchDie" placeholder="e.g. 0001" data-i18n="placeholderDie" autocomplete="off" disabled style="flex: 1;">
+            <input type="text" id="searchDie" placeholder="e.g. 0001" data-i18n="placeholderDie" autocomplete="off"
+              disabled style="flex: 1;">
           </div>
           <div id="dieFeedback"
             style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-sm); border-left: 3px solid var(--accent);">
@@ -657,15 +663,18 @@
               Die Details</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.5rem;">
               <div id="df-tooth" style="display: none;">
-                <div data-i18n="zTooth" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Z-Tooth</div>
+                <div data-i18n="zTooth" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
+                  Z-Tooth</div>
                 <div id="df-tooth-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div>
-                <div data-i18n="dimensions" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Dimensions</div>
+                <div data-i18n="dimensions"
+                  style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Dimensions</div>
                 <div id="df-size-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div id="df-radius" style="display: none;">
-                <div data-i18n="radius" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Corner Radius</div>
+                <div data-i18n="radius" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
+                  Corner Radius</div>
                 <div id="df-radius-val" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);"></div>
               </div>
               <div id="df-shape" style="display: none;">
@@ -675,15 +684,18 @@
             </div>
             <div id="df-comments"
               style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.1);">
-              <div data-i18n="comments" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Comments</div>
+              <div data-i18n="comments" style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
+                Comments</div>
               <div id="df-comments-val" style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">
               </div>
             </div>
           </div>
-          <div id="dieNotFound" data-i18n="dieNotFound" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">
+          <div id="dieNotFound" data-i18n="dieNotFound"
+            style="color: var(--danger); font-size: 0.75rem; margin-top: 0.35rem; display: none;">
             Die not found.</div>
           <div style="margin-top: 0.35rem;">
-            <span id="dieStatus" data-i18n="autoLoading" style="font-size: 0.75rem; color: var(--text-muted);">Auto-loading
+            <span id="dieStatus" data-i18n="autoLoading"
+              style="font-size: 0.75rem; color: var(--text-muted);">Auto-loading
               260316_Stansearkiv.xlsx...</span>
             <span id="globalAroundSpaceWarning" data-i18n="aroundWarnGlobal"
               style="font-size: 0.75rem; color: var(--warning); margin-left: 0.5rem; display: none;">⚠️ Around space Not
@@ -716,11 +728,13 @@
           <div class="die-row">
             <div class="die-row__label"></div>
             <div class="input-group">
-              <label for="acrossCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span class="unit">mm</span>)</label>
+              <label for="acrossCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span
+                  class="unit">mm</span>)</label>
               <input type="number" id="acrossCC" readonly>
             </div>
             <div class="input-group">
-              <label for="acrossTotal"><span data-i18n="acrossTotal">Total Width</span> (<span class="unit">mm</span>)</label>
+              <label for="acrossTotal"><span data-i18n="acrossTotal">Total Width</span> (<span
+                  class="unit">mm</span>)</label>
               <input type="number" id="acrossTotal" readonly>
             </div>
             <div class="input-group"></div>
@@ -743,7 +757,8 @@
               <div id="aroundSpaceWarning"
                 style="display:none; margin-top:0.35rem; font-size:0.73rem; color:var(--warning); align-items:center; gap:0.4rem;">
                 <span style="font-size:1.25rem;">⚠️</span>
-                <div style="line-height:1.4;" data-i18n="aroundWarnLocal">Not in die record — defaulted to <strong>3 mm</strong>.<br>Adjust if
+                <div style="line-height:1.4;" data-i18n="aroundWarnLocal">Not in die record — defaulted to <strong>3
+                    mm</strong>.<br>Adjust if
                   known.</div>
               </div>
             </div>
@@ -752,7 +767,8 @@
           <div class="die-row">
             <div class="die-row__label"></div>
             <div class="input-group">
-              <label for="aroundCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span class="unit">mm</span>)</label>
+              <label for="aroundCC"><span data-i18n="acrossCC">Center-to-Center</span> (<span
+                  class="unit">mm</span>)</label>
               <input type="number" id="aroundCC" readonly>
             </div>
             <div class="input-group">
@@ -775,12 +791,14 @@
           <input type="number" id="aroundDup" placeholder="1" min="1" step="1" value="1">
           <div class="repeat-warning" id="repeatWarning">
             <span style="font-size:1.25rem;">⚠️</span>
-            <div style="line-height:1.4;" data-i18n="repeatWarn">Effective repeat is below 148 mm converter minimum,<br>please increase the
+            <div style="line-height:1.4;" data-i18n="repeatWarn">Effective repeat is below 148 mm converter
+              minimum,<br>please increase the
               duplication</div>
           </div>
         </div>
         <div class="input-group">
-          <label for="aroundRepeatDup"><span data-i18n="repeatDup">Repeat × Duplication</span> (<span class="unit">mm</span>)</label>
+          <label for="aroundRepeatDup"><span data-i18n="repeatDup">Repeat × Duplication</span> (<span
+              class="unit">mm</span>)</label>
           <input type="number" id="aroundRepeatDup" readonly>
         </div>
       </div>
@@ -847,7 +865,8 @@
           style="font-size:3.5rem; font-weight:800; color:var(--text-primary); line-height:1;">—</div>
         <div id="res-totalMeters"
           style="font-size:1.4rem; font-weight:600; color:var(--text-secondary); margin-top:0.4rem;"></div>
-        <div data-i18n="totalDieCopies" style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total Die Copies</div>
+        <div data-i18n="totalDieCopies" style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem;">Total
+          Die Copies</div>
         <div id="res-prodOnlyCopies"
           style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.25rem; font-style:italic;"></div>
       </div>
@@ -875,48 +894,64 @@
             style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent); margin-bottom:0.6rem;">
             How to use</div>
           <ol style="margin:0; padding-left:1.25rem;">
-            <li data-i18n="rcTip1">Enter the <strong style="color:var(--text-primary);">Core Inner Diameter</strong> (mm) — the inner bore
+            <li data-i18n="rcTip1">Enter the <strong style="color:var(--text-primary);">Core Inner Diameter</strong>
+              (mm) — the inner bore
               of the cardboard or plastic core the labels are wound on. Common sizes: 25 mm (1″), 38 mm (1.5″), 76 mm
               (3″).</li>
-            <li data-i18n="rcTip2">Enter the <strong style="color:var(--text-primary);">Roll Outer Diameter</strong> (mm) — the full
+            <li data-i18n="rcTip2">Enter the <strong style="color:var(--text-primary);">Roll Outer Diameter</strong>
+              (mm) — the full
               diameter of the wound roll including all the label material.</li>
-            <li data-i18n="rcTip3">Enter the <strong style="color:var(--text-primary);">Label Repeat</strong> (mm) — the distance from the
+            <li data-i18n="rcTip3">Enter the <strong style="color:var(--text-primary);">Label Repeat</strong> (mm) — the
+              distance from the
               top of one label to the top of the next, including the gap between labels.</li>
-            <li data-i18n="rcTip4">Enter the <strong style="color:var(--text-primary);">Material Thickness</strong> (µm) — the combined
+            <li data-i18n="rcTip4">Enter the <strong style="color:var(--text-primary);">Material Thickness</strong> (µm)
+              — the combined
               thickness of the label face stock <em>plus</em> the liner. Use the preset dropdown for common label
               materials, or enter your own value.</li>
-            <li data-i18n="rcTip5">The calculator will instantly show the <strong style="color:var(--text-primary);">approximate number of
+            <li data-i18n="rcTip5">The calculator will instantly show the <strong
+                style="color:var(--text-primary);">approximate number of
                 labels per roll</strong> along with the estimated roll length in metres.</li>
           </ol>
         </div>
         <div class="calc-inputs" style="grid-template-columns: 1fr 1fr;">
           <div class="input-group">
-            <label for="rc-coreId"><span data-i18n="coreId">Core Inner Diameter</span> (<span class="unit">mm</span>)</label>
+            <label for="rc-coreId"><span data-i18n="coreId">Core Inner Diameter</span> (<span
+                class="unit">mm</span>)</label>
             <input type="number" id="rc-coreId" placeholder="e.g. 76" step="1" min="1">
           </div>
           <div class="input-group">
-            <label for="rc-rollOd"><span data-i18n="rollOd">Roll Outer Diameter</span> (<span class="unit">mm</span>)</label>
+            <label for="rc-rollOd"><span data-i18n="rollOd">Roll Outer Diameter</span> (<span
+                class="unit">mm</span>)</label>
             <input type="number" id="rc-rollOd" placeholder="e.g. 300" step="1" min="1">
           </div>
           <div class="input-group">
-            <label for="rc-repeat"><span data-i18n="labelRepeat">Label Repeat</span> (<span class="unit">mm</span>)</label>
+            <label for="rc-repeat"><span data-i18n="labelRepeat">Label Repeat</span> (<span
+                class="unit">mm</span>)</label>
             <input type="number" id="rc-repeat" placeholder="e.g. 33" step="0.001" min="0">
           </div>
           <div class="input-group">
-            <label for="rc-thickness"><span data-i18n="matThickness">Material Thickness</span> (<span class="unit">µm</span>)</label>
+            <label for="rc-thickness"><span data-i18n="matThickness">Material Thickness</span> (<span
+                class="unit">µm</span>)</label>
             <input type="number" id="rc-thickness" placeholder="e.g. 150" step="1" min="1">
           </div>
           <div class="input-group full">
             <label for="rc-preset" data-i18n="presetThickness">Preset Thicknesses</label>
             <select id="rc-preset"
               style="background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 0.75rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; width:100%; cursor:pointer; outline:none;">
-              <option value="" style="background:#1e293b; color:#f8fafc;" data-i18n="presetSelect">— select a preset to fill thickness —</option>
-              <option value="90" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermal">Thermal paper, direct (90 µm)</option>
-              <option value="110" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTop">Thermal paper, top-coated (110 µm)</option>
-              <option value="160" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTrans">Thermal transfer paper, premium (160 µm)</option>
-              <option value="100" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPet">Polyester / PET (100 µm)</option>
-              <option value="150" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPp">Polypropylene / PP (150 µm)</option>
-              <option value="190" style="background:#1e293b; color:#f8fafc;" data-i18n="presetKimdura">Kimdura / Polypropylene thick (190 µm)</option>
+              <option value="" style="background:#1e293b; color:#f8fafc;" data-i18n="presetSelect">— select a preset to
+                fill thickness —</option>
+              <option value="90" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermal">Thermal paper,
+                direct (90 µm)</option>
+              <option value="110" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTop">Thermal paper,
+                top-coated (110 µm)</option>
+              <option value="160" style="background:#1e293b; color:#f8fafc;" data-i18n="presetThermalTrans">Thermal
+                transfer paper, premium (160 µm)</option>
+              <option value="100" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPet">Polyester / PET (100
+                µm)</option>
+              <option value="150" style="background:#1e293b; color:#f8fafc;" data-i18n="presetPp">Polypropylene / PP
+                (150 µm)</option>
+              <option value="190" style="background:#1e293b; color:#f8fafc;" data-i18n="presetKimdura">Kimdura /
+                Polypropylene thick (190 µm)</option>
             </select>
           </div>
         </div>
@@ -1018,7 +1053,7 @@
         loading: "Loading...",
         hideDieConfig: "Hide Die Configuration ↑",
         showDieConfig: "Show Die Configuration ↓",
-        
+
         // Amount Mode
         totalLabels: "Total Labels",
         totalRolls: "Total Rolls",
@@ -1052,7 +1087,7 @@
         presetPet: "Polyester / PET (100 µm)",
         presetPp: "Polypropylene / PP (150 µm)",
         presetKimdura: "Kimdura / Polypropylene thick (190 µm)",
-        
+
         // Output / Results
         setLabelPressTo: "Set Label Press To",
         totalDieCopies: "Total Die Copies",
@@ -1120,7 +1155,7 @@
         repeat: "Trekk / Repeat",
         duplication: "Dobling (Duplication)",
         aroundWarnLocal: "Mangler i arkivet — standard satt til <strong>3 mm</strong>.<br>Juster hvis nødvendig.",
-        repeatWarn: "Effektivt trekk er under maskinens minimum (148 mm),<br>vennligst øk doblingen (duplication)",
+        repeatWarn: "Fremtrekk er under maskinens minimum (148 mm),<br>vennligst øk(duplication)",
         calculation: "Beregning",
         aroundDup: "Rundt Dobling (Duplication)",
         repeatDup: "Trekk × Dobling",
@@ -1133,7 +1168,7 @@
         loading: "Laster...",
         hideDieConfig: "Skjul Stansekonfigurasjon ↑",
         showDieConfig: "Vis Stansekonfigurasjon ↓",
-        
+
         // Amount Mode
         totalLabels: "Totalt Antall Etiketter",
         totalRolls: "Totalt Antall Ruller",
@@ -1167,7 +1202,7 @@
         presetPet: "Polyester / PET (100 µm)",
         presetPp: "Polypropylen / PP (150 µm)",
         presetKimdura: "Kimdura / Polypropylen tykk (190 µm)",
-        
+
         // Output / Results
         setLabelPressTo: "Sett Trykkmaskinen Til",
         totalDieCopies: "Totale Stansekopier",
@@ -1221,14 +1256,14 @@
         if (translations[currentLang][key]) {
           // If input placeholder
           if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
-             el.setAttribute('placeholder', translations[currentLang][key]);
+            el.setAttribute('placeholder', translations[currentLang][key]);
           } else {
-             // We inject text, careful with innerHTML vs textContent if it contains tags
-             el.innerHTML = translations[currentLang][key];
+            // We inject text, careful with innerHTML vs textContent if it contains tags
+            el.innerHTML = translations[currentLang][key];
           }
         }
       });
-      
+
       // Auto-translate numeric placeholders (e.g. -> f.eks.)
       document.querySelectorAll('input[placeholder]').forEach(el => {
         const p = el.getAttribute('placeholder');
@@ -1239,7 +1274,7 @@
           el.setAttribute('placeholder', p.replace(/^f\.eks\./i, 'e.g.'));
         }
       });
-      
+
       document.documentElement.lang = currentLang;
       // Re-trigger current calculation to update dynamic strings
       if (typeof calculateCurrent === 'function') calculateCurrent();
@@ -1485,7 +1520,7 @@
 
       const wasteStrParts = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrParts.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
+        wasteStrParts.push(t('totalWasteRevs', { revs: fmt(wasteRevs), meters: fmt(dieReg) }));
       }
       const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : t('totalNoWaste');
 
@@ -1493,7 +1528,7 @@
 
       $('res-productionCopies').textContent = fmt(totalDieCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', {meters: fmt(parseFloat(splitRunM.toFixed(2)))})} + ${wasteStr})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', { meters: fmt(parseFloat(splitRunM.toFixed(2))) })} + ${wasteStr})`;
       $('production-card').style.display = 'block';
       $('results-amount').classList.add('visible');
       $('results-split').classList.remove('visible');
@@ -1536,7 +1571,7 @@
       // Full roll breakdown
       const perRoll = perRollRaw;
       const dmLabel = document.querySelector('label[for="perRollDm"]');
-      if (dmLabel) dmLabel.innerHTML = t('rollLengthMFor', {labels: perRoll});
+      if (dmLabel) dmLabel.innerHTML = t('rollLengthMFor', { labels: perRoll });
 
       const rollsNeeded = total / perRoll;
       const copiesAcross = Math.ceil(rollsNeeded / across);
@@ -1557,13 +1592,13 @@
 
       const wasteStrPartsFull = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrPartsFull.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
+        wasteStrPartsFull.push(t('totalWasteRevs', { revs: fmt(wasteRevs), meters: fmt(dieReg) }));
       }
       const wasteStrFull = wasteStrPartsFull.length > 0 ? wasteStrPartsFull.join(' + ') : t('totalNoWaste');
 
       $('res-productionCopies').textContent = fmt(totalCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} ${t('productionMeters', {meters: fmt(parseFloat(totalRunM.toFixed(2)))})} + ${wasteStrFull})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} ${t('productionMeters', { meters: fmt(parseFloat(totalRunM.toFixed(2))) })} + ${wasteStrFull})`;
 
       let amountSummary =
         t('sumDie', { across, around, labelsPerRev }) + `<br>` +
@@ -1671,10 +1706,10 @@
 
       const wasteStrParts = [];
       if (wasteRevs > 0 || dieReg > 0) {
-        wasteStrParts.push(t('totalWasteRevs', {revs: fmt(wasteRevs), meters: fmt(dieReg)}));
+        wasteStrParts.push(t('totalWasteRevs', { revs: fmt(wasteRevs), meters: fmt(dieReg) }));
       }
       if (spliceWasteLabels > 0) {
-        wasteStrParts.push(t('totalWasteLabels', {labels: fmt(spliceWasteLabels)}));
+        wasteStrParts.push(t('totalWasteLabels', { labels: fmt(spliceWasteLabels) }));
       }
       const wasteStr = wasteStrParts.length > 0 ? wasteStrParts.join(' + ') : t('totalNoWaste');
 
@@ -1682,7 +1717,7 @@
 
       $('res-productionCopies').textContent = fmt(totalDieCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', {meters: fmt(parseFloat(splitRunM.toFixed(2)))})} + ${wasteStr})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} ${t('productionMeters', { meters: fmt(parseFloat(splitRunM.toFixed(2))) })} + ${wasteStr})`;
       $('production-card').style.display = 'block';
 
       // Build summary
@@ -2052,7 +2087,7 @@
         $('langToggle').textContent = '🌐 NO';
         $('langToggle').style.color = 'var(--text-primary)';
       }
-      
+
       applyTranslations();
 
       $('langToggle').addEventListener('click', () => {
