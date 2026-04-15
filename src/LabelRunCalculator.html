@@ -1045,27 +1045,53 @@
       const totalRaw = parseInt($('totalLabels').value);
       const total = (!isNaN(totalRaw) && totalRaw > 0) ? totalRaw : 0;
       const perRollRaw = parseInt($('perRoll').value);
-      
-      // If either Total Labels or Labels per Roll is missing, we don't have enough to calculate
-      if (total === 0 || isNaN(perRollRaw) || perRollRaw === 0) {
-        // Only clearing production card and summary, detailed tiles are removed
+      const hasPerRoll = !isNaN(perRollRaw) && perRollRaw > 0;
+
+      // Always clear if no total labels
+      if (total === 0) {
         $('res-productionCopies').textContent = '—';
         $('res-prodOnlyCopies').textContent = '';
-        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> and <strong>Labels per Roll</strong> to calculate.';
+        $('summary-amount').innerHTML = 'Enter <strong>Total Labels</strong> to calculate.';
         $('production-card').style.display = 'none';
         $('results-amount').classList.add('visible');
         $('results-split').classList.remove('visible');
-        
         const dmLabel = document.querySelector('label[for="perRollDm"]');
         if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
-        
-        // Clear the auto-filled dm length if we aren't actively typing it
-        if (document.activeElement !== $('perRollDm')) {
-          $('perRollDm').value = '';
-        }
+        if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
         return;
       }
-      
+
+      // ── Die-copies calculation (always runs when total > 0) ──
+      const labelsPerRev = across * around;
+      const dieCopiesRaw = total / labelsPerRev;
+      const fullRevs = Math.ceil(dieCopiesRaw);
+      const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
+      const dieReg = parseFloat($('wasteMeters').value) || 0;
+      const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
+      const totalDieCopies = fullRevs + wasteRevs;
+
+      $('res-productionCopies').textContent = fmt(totalDieCopies);
+      $('res-prodOnlyCopies').textContent = `(${fmt(fullRevs)} production + ${fmt(wasteRevs)} waste)`;
+      $('production-card').style.display = 'block';
+      $('results-amount').classList.add('visible');
+      $('results-split').classList.remove('visible');
+
+      // ── Roll breakdown (only runs when Labels per Roll is also set) ──
+      if (!hasPerRoll) {
+        const dmLabel = document.querySelector('label[for="perRollDm"]');
+        if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>)`;
+        if (document.activeElement !== $('perRollDm')) $('perRollDm').value = '';
+
+        $('summary-amount').innerHTML =
+          `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
+          `${fmt(total)} ÷ ${labelsPerRev} = <strong>${fmt(parseFloat(dieCopiesRaw.toFixed(4)))} copies</strong> of the die<br>` +
+          `Rounded up: <strong>${fmt(fullRevs * labelsPerRev)} total labels</strong> (${fullRevs} production copies)` +
+          (wasteRevs > 0 ? ` + <strong>${fmt(wasteRevs)} waste</strong> = <strong>${fmt(totalDieCopies)} total die copies</strong>` : '') +
+          `<br><em style="color:var(--text-muted)">Enter <strong>Labels per Roll</strong> for full roll breakdown.</em>`;
+        return;
+      }
+
+      // Full roll breakdown
       const perRoll = perRollRaw;
       const dmLabel = document.querySelector('label[for="perRollDm"]');
       if (dmLabel) dmLabel.innerHTML = `Roll Length in (<span class="unit">dm</span>) for ${perRoll} Labels`;
@@ -1078,28 +1104,19 @@
       const prodCopies = revolutions * copiesAcross;
       const totalPrinted = actualRolls * perRoll;
 
-      const repeatLen = parseFloat(aroundRepeatDup.value) || 0;
       const runPerRollM = (revolutions * repeatLen) / 1000;
-      
-      // Update Roll Length in dm dynamically, unless the user is actively typing in it
       if (document.activeElement !== $('perRollDm')) {
         $('perRollDm').value = parseFloat((runPerRollM * 10).toFixed(2));
       }
-      
       const totalRunM = runPerRollM * copiesAcross;
-      const dieReg = parseFloat($('wasteMeters').value) || 0;
       const grandTotalM = totalRunM + dieReg;
-      const wasteRevs = (dieReg > 0 && repeatLen > 0) ? Math.ceil((dieReg * 1000) / repeatLen) : 0;
       const totalCopies = prodCopies + wasteRevs;
-
-      // Detailed tiles are removed, so we skip populating them
 
       $('res-productionCopies').textContent = fmt(totalCopies);
       $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} production + ${fmt(wasteRevs)} waste)`;
-      $('production-card').style.display = 'block';
 
       let amountSummary =
-        `Die: <strong>${across} across × ${around} around = ${across * around} labels/revolution</strong><br>` +
+        `Die: <strong>${across} across × ${around} around = ${labelsPerRev} labels/revolution</strong><br>` +
         `${fmt(total)} labels ÷ ${fmt(perRoll)} per roll = <strong>${fmt(rollsNeeded)} rolls</strong> needed<br>` +
         `Rounded to <strong>${fmt(actualRolls)} rolls</strong> (${fmt(copiesAcross)} copies across × ${across} lanes)` +
         (extraRolls > 0 ? ` — <strong>${fmt(extraRolls)} extra</strong>` : '') + `<br>` +
@@ -1113,9 +1130,6 @@
       }
 
       $('summary-amount').innerHTML = amountSummary;
-
-      $('results-amount').classList.add('visible');
-      $('results-split').classList.remove('visible');
     }
 
     function calcSplitRoll(across, around) {
