@@ -3,7 +3,7 @@
 A lightweight, single-page web application for calculating label printing production runs from die configuration.
 
 ![Label Run Calculator](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-AGPLv3-green)
 
 ## Features
 
@@ -76,7 +76,7 @@ LabelCalculate/
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0 — see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
