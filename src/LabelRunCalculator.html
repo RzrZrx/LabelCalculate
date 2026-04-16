@@ -1588,7 +1588,7 @@
       }
       const totalRunM = runPerRollM * copiesAcross;
       grandTotalM = totalRunM + dieReg;
-      const totalCopies = prodCopies + wasteRevs;
+      const totalCopies = Math.ceil(prodCopies) + wasteRevs;
 
       const wasteStrPartsFull = [];
       if (wasteRevs > 0 || dieReg > 0) {
@@ -1598,7 +1598,7 @@
 
       $('res-productionCopies').textContent = fmt(totalCopies);
       $('res-totalMeters').textContent = `${fmt(parseFloat(grandTotalM.toFixed(2)))} m`;
-      $('res-prodOnlyCopies').textContent = `(${fmt(prodCopies)} ${t('productionMeters', { meters: fmt(parseFloat(totalRunM.toFixed(2))) })} + ${wasteStrFull})`;
+      $('res-prodOnlyCopies').textContent = `(${fmt(Math.ceil(prodCopies))} ${t('productionMeters', { meters: fmt(parseFloat(totalRunM.toFixed(2))) })} + ${wasteStrFull})`;
 
       let amountSummary =
         t('sumDie', { across, around, labelsPerRev }) + `<br>` +
